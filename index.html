@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Luxury Doors — Porte di Lusso</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Raleway:wght@200;300;400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <div id="cursorDot"></div>
+  <div id="cursorRing"></div>
+
+  <nav class="nav" id="nav">
+    <div class="nav__logo">
+      <span class="nav__logo-symbol">◈</span>
+      <span class="nav__logo-text">Luxury Doors</span>
+    </div>
+    <ul class="nav__links">
+      <li><a href="#about" class="nav__link">Filosofia</a></li>
+      <li><a href="#our-works" class="nav__link">I Lavori</a></li>
+      <li><a href="#collections" class="nav__link">Catalogo</a></li>
+      <li><a href="#craft" class="nav__link">La nostra Mission</a></li>
+      <li><a href="#contact" class="nav__link">Contatto</a></li>
+    </ul>
+    <button id="themeToggle" class="nav__link theme-btn-style">
+      <span class="theme-toggle-icon">☀️</span>
+    </button>
+    <button class="nav__menu-btn" id="menuBtn" aria-label="Menu">
+      <span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <ul>
+      <li><a href="#about" class="mobile-link">Filosofia</a></li>
+      <li><a href="#collections" class="mobile-link">Catalogo</a></li>
+      <li><a href="#craft" class="mobile-link">Artigianalità</a></li>
+      <li><a href="#contact" class="mobile-link">Contatto</a></li>
+    </ul>
+  </div>
+
+  <section class="hero" id="hero">
+    <div class="hero__corridor">
+      <div class="corridor__layer corridor__layer--1"></div>
+      <div class="corridor__layer corridor__layer--2"></div>
+      <div class="corridor__layer corridor__layer--3"></div>
+      <div class="corridor__layer corridor__layer--4"></div>
+      <div class="corridor__layer corridor__layer--5"></div>
+      <div class="corridor__layer corridor__layer--6"></div>
+      <div class="corridor__door">
+        <div class="door__frame">
+          <div class="door__panel door__panel--left"></div>
+          <div class="door__panel door__panel--right"></div>
+          <div class="door__light"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero__content">
+      <p class="hero__eyebrow reveal-up">Una porta non è un confine, ma l’invito del destino a scegliere il proprio domani: chiudila per custodire la tua pace, aprila per accogliere il mondo.</p>
+      <h1 class="hero__title reveal-up">
+        <span>Ogni soglia</span>
+        <em>racconta</em>
+        <span>un'epoca</span>
+      </h1>
+      <p class="hero__subtitle reveal-up">Porte che non separano ambienti,<br>ma uniscono visioni al mondo.</p>
+      <a href="#collections" class="hero__cta reveal-up">
+        <span>Esplora il Catalogo</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
+
+    <div class="hero__scroll-hint">
+      <span>Scorri</span>
+      <div class="scroll-line"></div>
+    </div>
+    <div class="hero__grain"></div>
+  </section>
+
+  <div class="marquee-strip">
+    <div class="marquee-track">
+      <span>MADE IN ITALY</span><span class="sep">◈</span>
+      <span> 🇮🇹  🇮🇹  🇮🇹  🇮🇹 </span><span class="sep">◈</span>
+      <span>DESIGN ESCLUSIVO</span><span class="sep">◈</span>
+      <span> 🇮🇹  🇮🇹  🇮🇹  🇮🇹 </span><span class="sep">◈</span>
+      <span>MADE IN ITALY</span><span class="sep">◈</span>
+      <span> 🇮🇹  🇮🇹  🇮🇹  🇮🇹 </span><span class="sep">◈</span>
+      <span>DESIGN ESCLUSIVO</span><span class="sep">◈</span>
+      <span> 🇮🇹  🇮🇹  🇮🇹  🇮🇹 </span><span class="sep">◈</span>
+      <span>MADE IN ITALY</span><span class="sep">◈</span>
+      <span> 🇮🇹  🇮🇹  🇮🇹  🇮🇹 </span><span class="sep">◈</span>
+    </div>
+  </div>
+
+  <section class="our-works" id="our-works">
+    <div class="our-works__header">
+      <p class="section-label">/ Eccellenza sul campo</p>
+      <h2 class="our-works__title reveal-up">Stile<br><em>italiano</em></h2>
+    </div>
+
+    <div id="worksLoader" class="divine-loader section-loader">
+      <div class="divine-loader__icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <p class="divine-loader__text">Caricamento Galleria</p>
+    </div>
+
+    <div class="our-works__gallery" id="works-container"></div>
+  </section>
+
+  <section class="about" id="about">
+    <div class="about__grid">
+      <div class="about__visual">
+        <div class="about__frame">
+          <div class="about__inner-frame">
+            <div class="about__geometry">
+              <div class="geo geo--rect"></div>
+              <div class="geo geo--diagonal"></div>
+              <div class="geo geo--circle"></div>
+            </div>
+            <div class="about__number">Luxury Doors</div>
+          </div>
+        </div>
+        <div class="about__stat-grid">
+          <div class="stat-card">
+            <div class="stat-card__num">2.400+</div>
+            <div class="stat-card__label">Progetti realizzati</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__num">100 + modelli</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="about__text">
+        <p class="section-label">/ La Nostra Filosofia</p>
+        <h2 class="about__title">Oltre la soglia,<br><em>un universo</em></h2>
+        <p class="about__body">
+          Una porta non è semplicemente un elemento architettonico. È il confine tra due realtà, 
+          il momento sospeso prima che una nuova esperienza abbia inizio. Da oltre trent'anni 
+          progettiamo questo passaggio con la stessa devozione di un orafo.
+        </p>
+        <p class="about__body">
+          Ogni pezzo nasce da un dialogo tra materia e visione: legni selezionati a mano, 
+          metalli lavorati in fusione, superfici trattate con processi esclusivi che conferiscono 
+          una profondità visiva ineguagliabile.
+        </p>
+        <a href="#craft" class="text-link">
+          Il nostro processo
+          <span class="text-link__line"></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="collections" id="collections">
+    <div class="collections__header">
+      <p class="section-label">/ Il Catalogo Completo</p>
+      
+      <div class="collections__super-actions">
+        <button class="gold-btn" data-action="sup1">
+          <span class="gold-btn__text">Catalogo Pannelli 1</span>
+          <span class="gold-btn__shine"></span>
+        </button>
+        <button class="gold-btn" data-action="sup2">
+          <span class="gold-btn__text">Catalogo Pannelli 2</span>
+          <span class="gold-btn__shine"></span>
+        </button>
+      </div>
+    </div>
+
+
+    </div>
+
+    <div id="catalogLoader" class="divine-loader section-loader">
+      <div class="divine-loader__icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <p class="divine-loader__text">Caricamento Catalogo</p>
+    </div>
+
+    <div class="collections__grid" id="grid-container"></div>
+  </section>
+
+  <section class="craft" id="craft">
+    <div class="craft__bg">
+      <div class="craft__perspective-grid"></div>
+    </div>
+    <div class="craft__content">
+      <div class="craft__left">
+        <p class="section-label">/ Il Processo</p>
+        <h2 class="craft__title">L'arte<br><em>della</em><em> </em><em>Bellezza</em></h2>
+        <p class="craft__body">
+          Progettiamo l'accoglienza, selezioniamo l'unico. Ogni nostra porta è il frutto di una ricerca estetica che trasforma l'esperienza dei maestri artigiani in un elemento d’arredo senza tempo
+        </p>
+      </div>
+
+      <div class="craft__steps">
+        <div class="craft-step">
+          <div class="craft-step__num">I</div>
+          <div class="craft-step__info"><h4>Consulenza e Progetto</h4></div>
+        </div>
+        <div class="craft-step__connector"></div>
+        <div class="craft-step">
+          <div class="craft-step__num">II</div>
+          <div class="craft-step__info"><h4>Qualità dei Materiali</h4></div>
+        </div>
+        <div class="craft-step__connector"></div>
+        <div class="craft-step">
+          <div class="craft-step__num">III</div>
+          <div class="craft-step__info"><h4>Lavorazione Artigianale</h4></div>
+        </div>
+        <div class="craft-step__connector"></div>
+        <div class="craft-step">
+          <div class="craft-step__num">IV</div>
+          <div class="craft-step__info"><h4>Consegna rapida</h4></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="quote-interlude">
+    <div class="quote-interlude__lines">
+      <div class="qi-line qi-line--h"></div>
+      <div class="qi-line qi-line--v"></div>
+    </div>
+    <blockquote>
+      <span class="quote-mark">"</span>
+      <p>Una soglia è sempre un inizio.<br>Noi la costruiamo perché duri per sempre.</p>
+      <cite>— Fondatore</cite>
+    </blockquote>
+  </div>
+
+  <section class="contact" id="contact">
+    <div class="contact__bg">
+      <div class="contact__mirror-frame"></div>
+    </div>
+    <div class="contact__inner">
+      <p class="section-label">/ Parlaci del Tuo Spazio</p>
+      <h2 class="contact__title">Inizia il<br><em>tuo progetto</em></h2>
+      <p class="contact__sub">Ogni grande porta nasce da una conversazione. Scrivici.</p>
+      
+      <form class="contact__form" id="contactForm" novalidate>
+        <div class="form-row">
+          <div class="form-field">
+            <input type="text" id="name" name="name" placeholder=" " required />
+            <label for="name">Nome</label>
+            <div class="field-line"></div>
+          </div>
+          <div class="form-field">
+            <input type="tel" id="phone" name="phone" placeholder=" " />
+            <label for="phone">Telefono</label>
+            <div class="field-line"></div>
+          </div>
+        </div>
+        <div class="form-field">
+          <input type="email" id="email" name="email" placeholder=" " required />
+          <label for="email">Email</label>
+          <div class="field-line"></div>
+        </div>
+        <div class="form-field">
+          <textarea id="message" name="message" rows="4" placeholder=" " required></textarea>
+          <label for="message">Descrivi la tua richiesta</label>
+          <div class="field-line"></div>
+        </div>
+        <button type="submit" class="form-submit">
+          <span class="form-submit__text">Invia il Messaggio</span>
+          <span class="form-submit__icon">◈</span>
+        </button>
+        <div class="form-success" id="formSuccess">
+          <span class="form-success__icon">✦</span>
+          <p>Messaggio inviato. Vi risponderemo entro 24 ore.</p>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <span class="footer__logo-symbol">◈</span>
+        <span class="footer__logo-text">Luxury Doors</span>
+        <p>Luxury Doors<br>Porte Blindate</p>
+      </div>
+      <div class="footer__links">
+        <h5>Navigazione</h5>
+        <a href="#about">La Nostra Azienda</a>
+        <a href="#collections">Catalogo</a>
+        <a href="#craft">Il Processo</a>
+        <a href="#contact">Contatto</a>
+      </div>
+      <div class="footer__links">
+        <h5>Contatti</h5>
+
+        <span>Sede 1 Vibo Valentia C.DA Aereoporto</span>
+        <a href="mailto:pontiglione@luxurydoors.org">luxurydoors.vv@luxurydoors.org</a>
+        <span>tel.3517792450</span>
+
+        <span>Sede 2: Borgaro Torinese via Lanzo 89</span>
+        <a href="mailto:pontiglione@luxurydoors.org">luxurydoors@luxurydoors.org</a>
+        <span>tel.327 106 82981</span>
+
+      </div>
+
+      <div class="footer__links">
+        <h5>Tieniti sempre aggioronato!</h5>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© 2026 Luxury Doors — Tutti i diritti riservati</span>
+      <span>#LuxuryDoors</span>
+    </div>
+  </footer>
+
+  <div class="lightbox" id="lightbox">
+    <div class="lightbox__overlay" id="lightboxOverlay"></div>
+    <button class="lightbox__close" id="lightboxClose">✕</button>
+    
+    <div class="lightbox__layout">
+      <div class="lightbox__col lightbox__col--img">
+        <div id="divineLoader" class="divine-loader">
+          <div class="divine-loader__icon">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <p class="divine-loader__text">Caricamento Galleria</p>
+        </div>
+        <img src="" alt="Galleria" id="lightboxImage" class="lightbox__img">
+        <div class="lightbox__nav">
+          <button class="lightbox__btn" id="lightboxPrev">←</button>
+          <span class="lightbox__counter" id="lightboxCounter">1 / 1</span>
+          <button class="lightbox__btn" id="lightboxNext">→</button>
+        </div>
+      </div>
+
+      <div class="lightbox__col lightbox__col--3d">
+        <h4 class="lightbox__3d-title">Ispeziona in 3D</h4>
+        <div class="door-3d-scene" id="door3DScene">
+          <div class="door-3d-hinge" id="door3DHinge">
+            <div class="door-3d-mesh">
+              <div class="door-3d-face door-3d-front" id="door3DFront"></div>
+              <div class="door-3d-face door-3d-edge"></div>
+              <div class="door-3d-face door-3d-back"></div>
+            </div>
+          </div>
+        </div>
+        <div class="lightbox__3d-controls">
+          <input type="range" id="door3DSlider" min="0" max="100" value="0" class="door-slider">
+          <label for="door3DSlider">Apri / Chiudi Porta</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="catalog-modal" id="catalogModal">
+    <div class="catalog-modal__overlay" id="catalogModalOverlay"></div>
+    <div class="catalog-modal__content">
+        <button class="catalog-modal__close" id="catalogModalClose">✕ Chiudi</button>
+        <div class="catalog-modal__loader">
+            <div class="loader-spinner"></div>
+            <p>Caricamento Catalogo...</p>
+        </div>
+        <iframe src="" id="catalogIframe" frameborder="0" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <script src="tema.js"></script>
+  <script src="data.js"></script>
+  <script src="cursor.js"></script>
+  <script src="navbar.js"></script>
+  <script src="lightbox.js"></script>
+  <script src="animations.js"></script>
+  <script src="works.js"></script>
+  <script src="catalog.js"></script>
+  <script src="form.js"></script>
+  <script src="door-scroll.js"></script>
+  <script src="main.js"></script> 
+</body>
+</html>
