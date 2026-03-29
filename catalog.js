@@ -239,6 +239,19 @@ const MenuCatalogoManager = {
 // BOOTSTRAP — eseguito una sola volta al caricamento pagina
 // ============================================================
 document.addEventListener("DOMContentLoaded", () => {
+    CatalogModalManager.init();  // ← prima di tutto
     CatalogManager.init();
-    MenuCatalogoManager.init();
+    MenuCatalogoManager.init();  // costruisce il mega menu con btnSup1/btnSup2
+
+    // Gold btn sezione
+    document.querySelectorAll('[data-action="sup1"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            CatalogModalManager.open("https://www.sfogliami.it/fl/322021/t618zm2s44f54xqpdxxpzyp3rtep2p");
+        });
+    });
+    document.querySelectorAll('[data-action="sup2"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            CatalogModalManager.open("https://www.sfogliami.it/fl/322020/pp74s3m9g9g5pdrybcvpyxxtqqxzff77");
+        });
+    });
 });
