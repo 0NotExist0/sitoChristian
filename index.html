@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Raleway:wght@200;300;400;500&display=swap" rel="stylesheet" />
 </head>
 <body>
-
+  
   <div id="cursorDot"></div>
   <div id="cursorRing"></div>
 
@@ -344,6 +344,73 @@
         <iframe src="" id="catalogIframe" frameborder="0" allowfullscreen></iframe>
     </div>
   </div>
+  <!-- ================================================
+     WHATSAPP FLOATING — Luxury Doors Theme
+     Incolla prima del tag </body> in index.html
+     ================================================ -->
+
+<!-- Pulsante Floating -->
+<button id="wa-fab" aria-label="Scrivici su WhatsApp">
+  <svg width="26" height="26" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M16 2.933C8.805 2.933 2.933 8.805 2.933 16c0 2.31.617 4.476 1.693 6.348L2.4 29.6l7.42-2.193A13.017 13.017 0 0016 29.067c7.195 0 13.067-5.872 13.067-13.067S23.195 2.933 16 2.933z" fill="currentColor" opacity="0.9"/>
+    <path d="M22.22 18.91c-.32-.16-1.895-.935-2.19-1.04-.293-.107-.507-.16-.72.16-.213.32-.827 1.04-1.014 1.253-.187.213-.373.24-.693.08-.32-.16-1.352-.498-2.574-1.588-.952-.848-1.594-1.895-1.78-2.215-.187-.32-.02-.493.14-.653.144-.144.32-.373.48-.56.16-.187.213-.32.32-.533.107-.213.053-.4-.027-.56-.08-.16-.72-1.735-.987-2.375-.26-.62-.525-.535-.72-.545-.187-.008-.4-.01-.613-.01a1.18 1.18 0 00-.853.4c-.293.32-1.12 1.093-1.12 2.668 0 1.575 1.147 3.095 1.307 3.308.16.213 2.255 3.442 5.464 4.828.764.33 1.36.527 1.825.674.767.244 1.465.21 2.017.127.615-.092 1.895-.775 2.162-1.524.267-.748.267-1.39.187-1.524-.08-.133-.293-.213-.613-.373z" fill="var(--wa-bg)"/>
+  </svg>
+  <span class="wa-fab__label">WhatsApp</span>
+</button>
+
+<!-- Overlay + Modale -->
+<div id="wa-overlay" role="dialog" aria-modal="true" aria-labelledby="wa-modal-title">
+  <div id="wa-modal">
+
+    <div class="wa-modal__header">
+      <div class="wa-modal__header-deco">◈</div>
+      <div class="wa-modal__header-text">
+        <h3 id="wa-modal-title">Scrivici su WhatsApp</h3>
+        <p>Risposta entro pochi minuti</p>
+      </div>
+      <button class="wa-modal__close" id="wa-modal-close" aria-label="Chiudi">✕</button>
+    </div>
+
+    <div class="wa-modal__body">
+      <p class="wa-modal__intro">
+        Ogni grande porta nasce da una conversazione.<br>
+        Parlaci del tuo progetto.
+      </p>
+
+      <form id="wa-form" novalidate>
+        <div class="wa-form-row">
+          <div class="wa-field">
+            <input type="text" name="name" id="wa-name" placeholder=" " required autocomplete="name" />
+            <label for="wa-name">Nome</label>
+            <div class="wa-field__line"></div>
+          </div>
+          <div class="wa-field">
+            <input type="tel" name="phone" id="wa-phone" placeholder=" " autocomplete="tel" />
+            <label for="wa-phone">Telefono</label>
+            <div class="wa-field__line"></div>
+          </div>
+        </div>
+        <div class="wa-field">
+          <textarea name="message" id="wa-message" rows="3" placeholder=" " required></textarea>
+          <label for="wa-message">Il tuo messaggio</label>
+          <div class="wa-field__line"></div>
+        </div>
+
+        <div id="wa-status"></div>
+
+        <button type="submit" id="wa-submit">
+          <span id="wa-submit-text">Invia su WhatsApp</span>
+          <span class="wa-submit__icon">◈</span>
+        </button>
+      </form>
+    </div>
+
+    <div class="wa-modal__footer">
+      <span>Luxury Doors — Porte di Lusso</span>
+    </div>
+
+  </div>
+</div>
 
   <script src="tema.js"></script>
   <script src="data.js"></script>
@@ -356,6 +423,7 @@
   <script src="form.js"></script>
   <script src="door-scroll.js"></script>
   <script src="marquee.js"></script>
+  <script src="whatsapp.js"></script>
   <script src="main.js"></script> 
 </body>
 </html>
