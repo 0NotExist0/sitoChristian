@@ -2054,3 +2054,56 @@ body.day-theme #cursorDot {
         width: 100%;
     }
 }
+/* =========================================
+   TESTO DIVINO AEGIS (Al posto delle immagini)
+========================================= */
+.god-text-container {
+  position: relative;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 2rem;
+  z-index: 2;
+  /* Sfondo trasparente per far vedere la porta dietro */
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.god-text {
+  font-family: var(--ff-display);
+  font-size: clamp(1.4rem, 2.5vw, 2.2rem);
+  font-weight: 300;
+  line-height: 1.6;
+  text-transform: none; /* Disattiva il tutto maiuscolo */
+  
+  /* Gradiente animato: Oro scuro -> Bianco puro -> Oro scuro */
+  background: linear-gradient(90deg, var(--gold-dk) 0%, var(--white) 50%, var(--gold-dk) 100%);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: divineTextShimmer 5s linear infinite;
+  
+  /* Luce divina sullo sfondo (funziona anche con il background-clip attivo) */
+  filter: drop-shadow(0 0 15px rgba(255, 245, 184, 0.4)) drop-shadow(0 0 40px rgba(212, 175, 55, 0.6));
+}
+
+.god-cite {
+  display: block;
+  margin-top: 3rem;
+  font-family: var(--ff-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold-lt);
+  text-shadow: 0 0 15px var(--gold-glow);
+  font-style: normal;
+}
+
+@keyframes divineTextShimmer {
+  to {
+    background-position: 200% center;
+  }
+}
