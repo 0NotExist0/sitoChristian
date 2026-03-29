@@ -1,107 +1,114 @@
-<script>
-  // Aspettiamo che tutto l'HTML sia caricato prima di eseguire lo script
-  document.addEventListener('DOMContentLoaded', function () {
-    
-    // 1. Definiamo gli elementi del Modale
-    const fab       = document.getElementById('wa-fab');
-    const overlay   = document.getElementById('wa-overlay');
-    const btnClose  = document.getElementById('wa-modal-close');
-    
-    // 2. Definiamo gli elementi del Form (Assicurati che nel tuo HTML l'id sia "wa-form")
-    const form      = document.getElementById('wa-form');
-    const submitBtn = document.getElementById('wa-submit');
-    const submitTxt = document.getElementById('wa-submit-text');
-    const status    = document.getElementById('wa-status');
+/* whatsapp.js — Script Isolato e Completo */
 
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxhAPZVyp1vHgVcQQxCXDDc8UES1Jwn1WDkgdlqBoG-kRgSOVbUwODgz4c6GZoti8Y2/exec';
+document.addEventListener('DOMContentLoaded', function () {
+  
+  // 1. Inizializzazione Riferimenti (Come il GetComponent)
+  const fab       = document.getElementById('wa-fab');
+  const overlay   = document.getElementById('wa-overlay');
+  const btnClose  = document.getElementById('wa-modal-close');
+  const form      = document.getElementById('wa-form');
+  const submitBtn = document.getElementById('wa-submit');
+  const submitTxt = document.getElementById('wa-submit-text');
+  const status    = document.getElementById('wa-status');
 
-    // Controllo di sicurezza: se mancano gli elementi principali, fermiamo lo script per evitare errori in console
-    if (!fab || !overlay || !form) {
-      console.error("Errore: Elementi del modale (wa-fab, wa-overlay) o del form (wa-form) non trovati nell'HTML.");
-      return;
-    }
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxhAPZVyp1vHgVcQQxCXDDc8UES1Jwn1WDkgdlqBoG-kRgSOVbUwODgz4c6GZoti8Y2/exec';
 
-    // --- LOGICA MODALE ---
-    function openModal() {
-      overlay.classList.add('open');
-      document.body.style.overflow = 'hidden';
-      // Riusa il cursore custom del sito se presente
-      if (typeof updateCursor === 'function') updateCursor();
-    }
+  // 2. Controllo Null Reference (Fondamentale per la stabilità)
+  if (!fab) { console.error("whatsapp.js: 'wa-fab' non trovato."); return; }
+  if (!overlay) { console.error("whatsapp.js: 'wa-overlay' non trovato."); return; }
+  if (!form) { console.error("whatsapp.js: 'wa-form' non trovato."); return; }
 
-    function closeModal() {
-      overlay.classList.remove('open');
-      document.body.style.overflow = '';
-    }
+  // Nascondiamo l'overlay di default per sicurezza
+  overlay.style.display = 'none';
 
-    // Assegnazione eventi per aprire e chiudere
-    fab.addEventListener('click', openModal);
+  // 3. Logica di Apertura/Chiusura (UI Controller)
+  function openModal() {
+    overlay.classList.add('open');
+    overlay.style.display = 'flex'; // Fallback di sicurezza in caso manchi nel CSS
+    document.body.style.overflow = 'hidden'; // Blocca lo scroll della pagina
+  }
+
+  function closeModal() {
+    overlay.classList.remove('open');
+    overlay.style.display = 'none';
+    document.body.style.overflow = ''; // Sblocca lo scroll
+  }
+
+  // 4. Assegnazione Event Listener (Input Manager)
+  fab.addEventListener('click', openModal);
+  
+  if (btnClose) {
     btnClose.addEventListener('click', closeModal);
-    
-    // Chiudi cliccando fuori dal modale
-    overlay.addEventListener('click', function (e) {
-      if (e.target === overlay) closeModal();
-    });
-    
-    // Chiudi premendo il tasto Esc
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && overlay.classList.contains('open')) {
-        closeModal();
-      }
-    });
+  }
+  
+  overlay.addEventListener('click', function(e) {
+    // Chiude solo se clicchi fuori dal box bianco del modale
+    if (e.target === overlay) closeModal();
+  });
+  
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && overlay.style.display !== 'none') {
+      closeModal();
+    }
+  });
 
-    // --- LOGICA FORM E INVIO DATI ---
-    form.addEventListener('submit', function (e) {
-      e.preventDefault(); // Impedisce il ricaricamento della pagina
+  // 5. Logica di Invio Dati (Network Manager)
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
 
-      // Stato di caricamento
-      submitBtn.disabled = true;
-      if (submitTxt) submitTxt.textContent = 'Invio in corso…';
-      else submitBtn.innerText = 'Invio in corso…'; 
-      
+    // Feedback visivo immediato all'utente
+    if (submitBtn) submitBtn.disabled = true;
+    if (submitTxt) submitTxt.textContent = 'Invio in corso…';
+    
+    if (status) {
       status.innerHTML = '';
-      status.className = 'loading'; // Classe generica per eventuale CSS
+      status.className = 'loading';
+    }
 
-      // Estrazione dati dal form
-      const formData   = new FormData(form);
-      const dataParams = new URLSearchParams();
-      for (const [k, v] of formData) {
-        dataParams.append(k, v);
-      }
+    // Preparazione pacchetto dati
+    const formData   = new FormData(form);
+    const dataParams = new URLSearchParams();
+    for (const [k, v] of formData) {
+      dataParams.append(k, v);
+    }
 
-      // Invio a Google Apps Script
-      fetch(SCRIPT_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: dataParams
-      })
-      .then(function (res) {
-        if (!res.ok) throw new Error('HTTP Error: ' + res.status);
-        return res.json();
-      })
-      .then(function (data) {
-        if (data.status === 'success') {
+    // Chiamata asincrona al server
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: dataParams
+    })
+    .then(res => {
+      if (!res.ok) throw new Error('HTTP Error: ' + res.status);
+      return res.json();
+    })
+    .then(data => {
+      if (data.status === 'success') {
+        if (status) {
           status.innerHTML = '✦ ' + data.text;
           status.className = 'wa-status--success';
-          form.reset(); // Svuota il form
-          setTimeout(closeModal, 2400); // Chiude il modale dopo 2.4s
-        } else {
+        }
+        form.reset(); // Pulisce i campi
+        setTimeout(closeModal, 2500); // Chiude il modale in automatico dopo 2.5s
+      } else {
+        if (status) {
           status.innerHTML = data.text;
           status.className = 'wa-status--error';
         }
-      })
-      .catch(function (err) {
-        console.error("Dettaglio Errore Fetch:", err);
+      }
+    })
+    .catch(err => {
+      console.error("whatsapp.js Error:", err);
+      if (status) {
         status.innerHTML = 'Errore di connessione. Riprova.';
         status.className = 'wa-status--error';
-      })
-      .finally(function () {
-        // Ripristina il bottone a prescindere dal risultato
-        submitBtn.disabled = false;
-        if (submitTxt) submitTxt.textContent = 'Invia su WhatsApp';
-        else submitBtn.innerText = 'Invia su WhatsApp';
-      });
+      }
+    })
+    .finally(() => {
+      // Ripristina il bottone al termine, sia in caso di successo che di errore
+      if (submitBtn) submitBtn.disabled = false;
+      if (submitTxt) submitTxt.textContent = 'Invia su WhatsApp';
     });
-
   });
-</script>
+
+});
