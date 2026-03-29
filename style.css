@@ -527,32 +527,27 @@ a { color: inherit; text-decoration: none; }
   filter: brightness(1.1) contrast(1.2) grayscale(0) drop-shadow(0 0 15px rgba(212,175,55,0.5)); /* Si illumina d'oro */
 }
 
+/* =========================================
+   OVERLAY MODIFICATO PER MAGGIORE CONTRASTO
+========================================= */
 .collection-card__overlay { 
   position: absolute; 
   inset: 0; 
-  background: linear-gradient(180deg, transparent 30%, rgba(15, 15, 18, 0.9) 70%, var(--black) 100%); 
+  /* Gradiente alzato: lo scuro inizia al 50% invece che al 70% per coprire meglio il testo */
+  background: linear-gradient(180deg, transparent 20%, rgba(15, 15, 18, 0.85) 50%, var(--black) 100%); 
   z-index: 1; 
-  opacity: 0.9;
-  transition: opacity 0.5s var(--ease-smooth);
+  opacity: 0.95;
+  transition: opacity 0.5s var(--ease-smooth), background 0.5s var(--ease-smooth);
 }
+
 .collection-card:hover .collection-card__overlay {
   opacity: 1;
-  background: linear-gradient(180deg, transparent 40%, rgba(5, 5, 5, 0.95) 80%, var(--black) 100%); 
+  background: linear-gradient(180deg, transparent 30%, rgba(5, 5, 5, 0.95) 60%, var(--black) 100%); 
 }
 
-.collection-card__content { 
-  position: absolute; 
-  bottom: 0; left: 0; right: 0; 
-  padding: 3rem 2rem 2rem; 
-  z-index: 5; 
-  text-align: center; 
-  transform: translateY(25px); 
-  transition: transform 0.6s var(--ease-expo); 
-}
-.collection-card:hover .collection-card__content {
-  transform: translateY(0);
-}
-
+/* =========================================
+   TESTO CON OMBRA MARCATA
+========================================= */
 .collection-card__name { 
   font-family: var(--ff-display); 
   font-size: clamp(1.4rem, 2.5vw, 2rem); 
@@ -560,12 +555,15 @@ a { color: inherit; text-decoration: none; }
   color: var(--white); 
   margin-bottom: 0.8rem; 
   transform: scale(1);
+  /* Ombra stratificata: un contorno duro vicino + un'ombra diffusa lontana */
+  text-shadow: 0 2px 6px rgba(0,0,0,0.9), 0 10px 25px rgba(0,0,0,1);
   transition: color 0.4s var(--ease-smooth), transform 0.4s var(--ease-smooth), text-shadow 0.4s;
 }
+
 .collection-card:hover .collection-card__name {
   color: var(--gold-lt);
   transform: scale(1.05); 
-  text-shadow: 0 0 20px var(--gold-glow);
+  text-shadow: 0 0 20px var(--gold-glow), 0 4px 10px rgba(0,0,0,0.9);
 }
 
 .card-cta { 
@@ -580,7 +578,10 @@ a { color: inherit; text-decoration: none; }
   display: inline-block; 
   border-bottom: 1px solid var(--gold-lt);
   padding-bottom: 4px;
+  /* Aggiunta ombra di leggibilità anche per la Call To Action */
+  text-shadow: 0 2px 5px rgba(0,0,0,1);
 }
+
 .collection-card:hover .card-cta { 
   opacity: 1; 
   transform: translateY(0); 
