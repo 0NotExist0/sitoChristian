@@ -124,43 +124,43 @@ a { color: inherit; text-decoration: none; }
   to   { opacity: 1; transform: translateY(0); }
 }
 /* ── MARQUEE ──────────────────────────────────────────────── */
-.marquee-strip { 
-  background: var(--surface); 
-  border-top: 1px solid var(--border); 
-  border-bottom: 1px solid var(--border); 
-  padding: 1.2rem 0; 
-  overflow: hidden; 
+.marquee-strip {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 1.2rem 0;
+  overflow: hidden;
   width: 100vw;
   position: relative;
 }
 
-.marquee-track { 
-  display: flex; 
-  width: max-content; 
-  /* Trasla esattamente del 50%, unendo perfettamente i due blocchi generati dal JS */
-  animation: marqueeScroll 30s linear infinite; 
+.marquee-track {
+  display: flex;
+  width: max-content;   /* ← CRITICO: senza questo non scorre */
+  animation: marqueeScroll 30s linear infinite;
 }
 
 .marquee-content {
-  display: flex;
-  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;       /* ← CRITICO: impedisce la compressione */
 }
 
-.marquee-content span { 
-  font-size: 0.75rem; 
-  font-weight: 600; 
-  letter-spacing: 0.25em; 
-  text-transform: uppercase; 
-  color: var(--text); 
+.marquee-content span {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text);
   white-space: nowrap;
-  margin-right: 3rem; /* Spaziatura costante tra ogni elemento */
+  margin-right: 3rem;
   display: inline-block;
 }
 
-.marquee-content .sep { 
-  color: var(--gold-lt); 
-  letter-spacing: 0; 
-  text-shadow: 0 0 15px var(--white); 
+.marquee-content .sep {
+  color: var(--gold-lt);
+  letter-spacing: 0;
+  text-shadow: 0 0 15px var(--white);
 }
 
 @keyframes marqueeScroll {
