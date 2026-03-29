@@ -1,129 +1,107 @@
-/* whatsapp.js — Luxury Doors WhatsApp Widget */
+<script>
+  // Aspettiamo che tutto l'HTML sia caricato prima di eseguire lo script
+  document.addEventListener('DOMContentLoaded', function () {
+    
+    // 1. Definiamo gli elementi del Modale
+    const fab       = document.getElementById('wa-fab');
+    const overlay   = document.getElementById('wa-overlay');
+    const btnClose  = document.getElementById('wa-modal-close');
+    
+    // 2. Definiamo gli elementi del Form (Assicurati che nel tuo HTML l'id sia "wa-form")
+    const form      = document.getElementById('wa-form');
+    const submitBtn = document.getElementById('wa-submit');
+    const submitTxt = document.getElementById('wa-submit-text');
+    const status    = document.getElementById('wa-status');
 
-(function () {
-  const fab     = document.getElementById('wa-fab');
-  const overlay = document.getElementById('wa-overlay');
-  const btnClose= document.getElementById('wa-modal-close');
-  const form    = document.getElementById('wa-form');
-  const submit  = document.getElementById('wa-submit');
-  const submitTxt = document.getElementById('wa-submit-text');
-  const status  = document.getElementById('wa-status');
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxhAPZVyp1vHgVcQQxCXDDc8UES1Jwn1WDkgdlqBoG-kRgSOVbUwODgz4c6GZoti8Y2/exec';
 
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxhAPZVyp1vHgVcQQxCXDDc8UES1Jwn1WDkgdlqBoG-kRgSOVbUwODgz4c6GZoti8Y2/exec';
+    // Controllo di sicurezza: se mancano gli elementi principali, fermiamo lo script per evitare errori in console
+    if (!fab || !overlay || !form) {
+      console.error("Errore: Elementi del modale (wa-fab, wa-overlay) o del form (wa-form) non trovati nell'HTML.");
+      return;
+    }
 
-  function openModal() {
-    overlay.classList.add('open');
-    document.body.style.overflow = 'hidden';
-    // riusa il cursore custom del sito se presente
-    if (typeof updateCursor === 'function') updateCursor();
-  }
+    // --- LOGICA MODALE ---
+    function openModal() {
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      // Riusa il cursore custom del sito se presente
+      if (typeof updateCursor === 'function') updateCursor();
+    }
 
-  function closeModal() {
-    overlay.classList.remove('open');
-    document.body.style.overflow = '';
-  }
+    function closeModal() {
+      overlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
 
-  fab.addEventListener('click', openModal);
-  btnClose.addEventListener('click', closeModal);
-  overlay.addEventListener('click', function (e) {
-    if (e.target === overlay) closeModal();
-  });
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') closeModal();
-  });
+    // Assegnazione eventi per aprire e chiudere
+    fab.addEventListener('click', openModal);
+    btnClose.addEventListener('click', closeModal);
+    
+    // Chiudi cliccando fuori dal modale
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) closeModal();
+    });
+    
+    // Chiudi premendo il tasto Esc
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && overlay.classList.contains('open')) {
+        closeModal();
+      }
+    });
 
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
+    // --- LOGICA FORM E INVIO DATI ---
+    form.addEventListener('submit', function (e) {
+      e.preventDefault(); // Impedisce il ricaricamento della pagina
 
-    submit.disabled = true;
-    submitTxt.textContent = 'Invio in corso…';
-    status.innerHTML = '';
-    status.className = '';
+      // Stato di caricamento
+      submitBtn.disabled = true;
+      if (submitTxt) submitTxt.textContent = 'Invio in corso…';
+      else submitBtn.innerText = 'Invio in corso…'; 
+      
+      status.innerHTML = '';
+      status.className = 'loading'; // Classe generica per eventuale CSS
 
-    const formData   = new FormData(form);
-    const dataParams = new URLSearchParams();
-    for (const [k, v] of formData) dataParams.append(k, v);
+      // Estrazione dati dal form
+      const formData   = new FormData(form);
+      const dataParams = new URLSearchParams();
+      for (const [k, v] of formData) {
+        dataParams.append(k, v);
+      }
 
-    fetch(SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: dataParams
-    })
+      // Invio a Google Apps Script
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: dataParams
+      })
       .then(function (res) {
-        if (!res.ok) throw new Error('HTTP ' + res.status);
+        if (!res.ok) throw new Error('HTTP Error: ' + res.status);
         return res.json();
       })
       .then(function (data) {
         if (data.status === 'success') {
           status.innerHTML = '✦ ' + data.text;
           status.className = 'wa-status--success';
-          form.reset();
-          setTimeout(closeModal, 2400);
+          form.reset(); // Svuota il form
+          setTimeout(closeModal, 2400); // Chiude il modale dopo 2.4s
         } else {
           status.innerHTML = data.text;
           status.className = 'wa-status--error';
         }
       })
       .catch(function (err) {
-        console.error(err);
+        console.error("Dettaglio Errore Fetch:", err);
         status.innerHTML = 'Errore di connessione. Riprova.';
         status.className = 'wa-status--error';
       })
       .finally(function () {
-        submit.disabled = false;
-        submitTxt.textContent = 'Invia su WhatsApp';
+        // Ripristina il bottone a prescindere dal risultato
+        submitBtn.disabled = false;
+        if (submitTxt) submitTxt.textContent = 'Invia su WhatsApp';
+        else submitBtn.innerText = 'Invia su WhatsApp';
       });
+    });
+
   });
-})();<script>
-      document.getElementById('contactForm').addEventListener('submit', function(e) {
-        e.preventDefault(); 
-        
-        const btn = document.getElementById('submitBtn');
-        const status = document.getElementById('status');
-        
-        btn.disabled = true;
-        btn.innerText = "Invio in corso...";
-        status.innerHTML = "";
-        status.className = "loading";
-
-        // Il link esatto della tua Versione 6
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxhAPZVyp1vHgVcQQxCXDDc8UES1Jwn1WDkgdlqBoG-kRgSOVbUwODgz4c6GZoti8Y2/exec'; 
-        
-        // Estraiamo i dati dal form in modo leggibile per Google Apps Script
-        const formData = new FormData(this);
-        const dataParams = new URLSearchParams();
-        for (const pair of formData) {
-            dataParams.append(pair[0], pair[1]);
-        }
-
-        fetch(scriptURL, { 
-            method: 'POST', 
-            // Diciamo a Google esplicitamente che tipo di dati stiamo mandando
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: dataParams
-        })
-        .then(response => {
-            if (!response.ok) throw new Error("Errore di rete HTTP: " + response.status);
-            return response.json();
-        })
-        .then(data => {
-            if(data.status === "success") {
-              status.innerHTML = data.text;
-              status.className = "success";
-              document.getElementById('contactForm').reset();
-            } else {
-              status.innerHTML = data.text;
-              status.className = "error";
-            }
-            btn.disabled = false;
-            btn.innerText = "Invia su WhatsApp";
-        })
-        .catch(error => {
-            console.error("Dettaglio Errore:", error);
-            status.innerHTML = "Errore di connessione. Riprova.";
-            status.className = "error";
-            btn.disabled = false;
-            btn.innerText = "Riprova";
-        });
-      });
-    </script>
+</script>
