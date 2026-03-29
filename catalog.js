@@ -209,12 +209,14 @@ const MenuCatalogoManager = {
         if (!this._eventsBound) {
             document.addEventListener('click', (e) => {
                 // Catalogo 1
-                if (e.target.id === 'btnSup1' || e.target.closest?.('#btnSup1')) {
+                if (e.target.id === 'btnSup1' || e.target.closest?.('#btnSup1')
+                    || e.target.closest?.('[data-action="sup1"]')) {
                     e.preventDefault();
                     CatalogModalManager.open("https://www.sfogliami.it/fl/322021/t618zm2s44f54xqpdxxpzyp3rtep2p");
                 }
                 // Catalogo 2
-                if (e.target.id === 'btnSup2' || e.target.closest?.('#btnSup2')) {
+                if (e.target.id === 'btnSup2' || e.target.closest?.('#btnSup2')
+                    || e.target.closest?.('[data-action="sup2"]')) {
                     e.preventDefault();
                     CatalogModalManager.open("https://www.sfogliami.it/fl/322020/pp74s3m9g9g5pdrybcvpyxxtqqxzff77");
                 }
