@@ -1,4 +1,112 @@
-/* whatsapp.js — Metodo Completo con Estrazione Dati Esplicita */
+/* whatsapp.js — Metodo Completo con Estrazione Dati Univoca */
+
+document.addEventListener('DOMContentLoaded', function () {
+  
+  // 1. RIFERIMENTI UI (GameObject)
+  const fab       = document.getElementById('wa-fab');
+  const overlay   = document.getElementById('wa-overlay');
+  const btnClose  = document.getElementById('wa-modal-close');
+  const form      = document.getElementById('wa-form');
+  const submitBtn = document.getElementById('wa-submit');
+  const submitTxt = document.getElementById('wa-submit-text');
+  const status    = document.getElementById('wa-status');
+
+  // Riferimenti precisi ai campi del modale tramite ID
+  const inputName    = document.getElementById('wa-name');
+  const inputPhone   = document.getElementById('wa-phone');
+  const inputMessage = document.getElementById('wa-message');
+
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxhAPZVyp1vHgVcQQxCXDDc8UES1Jwn1WDkgdlqBoG-kRgSOVbUwODgz4c6GZoti8Y2/exec';
+
+  if (!fab || !overlay || !form) return;
+
+  // --- 2. LOGICA MODALE (Apertura/Chiusura) ---
+  function openModal() {
+    overlay.style.display = 'flex';
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    overlay.style.display = 'none';
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  fab.addEventListener('click', openModal);
+  if (btnClose) btnClose.addEventListener('click', closeModal);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal(); });
+
+  // --- 3. LOGICA DI INVIO (Network Manager) ---
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    // Feedback visivo
+    if (submitBtn) submitBtn.disabled = true;
+    const originalText = submitTxt ? submitTxt.textContent : "Invia su WhatsApp";
+    if (submitTxt) submitTxt.textContent = "Invio in corso...";
+    
+    if (status) {
+      status.innerHTML = "";
+      status.className = "loading";
+    }
+
+    // COSTRUZIONE MANUALE DEL PACCHETTO (Per evitare che si perda nome e messaggio)
+    const dataParams = new URLSearchParams();
+    
+    // Prendiamo i valori direttamente dagli ID univoci del modale
+    const valName    = inputName ? inputName.value.trim() : "";
+    const valPhone   = inputPhone ? inputPhone.value.trim() : "";
+    const valMessage = inputMessage ? inputMessage.value.trim() : "";
+
+    // Inviamo le chiavi ESATTE che il tuo script Google si aspetta
+    dataParams.append('name', valName);
+    dataParams.append('phone', valPhone);
+    dataParams.append('message', valMessage);
+    // Aggiungiamo l'email di sistema perché il tuo script Google probabilmente la richiede
+    dataParams.append('email', 'contatto_whatsapp@luxurydoors.it');
+
+    // DEBUG: Visualizza in console cosa stiamo inviando (premi F12 per vedere)
+    console.log("Dati in invio:", Object.fromEntries(dataParams));
+
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: dataParams
+    })
+    .then(response => {
+      if (!response.ok) throw new Error("Errore rete: " + response.status);
+      return response.json();
+    })
+    .then(data => {
+      if (data.status === "success") {
+        if (status) {
+          status.innerHTML = "✦ " + data.text;
+          status.className = "success";
+        }
+        form.reset();
+        setTimeout(closeModal, 2500);
+      } else {
+        if (status) {
+          status.innerHTML = data.text;
+          status.className = "error";
+        }
+      }
+    })
+    .catch(error => {
+      console.error("Errore Invio:", error);
+      if (status) {
+        status.innerHTML = "Errore di connessione. Riprova.";
+        status.className = "error";
+      }
+    })
+    .finally(() => {
+      if (submitBtn) submitBtn.disabled = false;
+      if (submitTxt) submitTxt.textContent = originalText;
+    });
+  });
+});/* whatsapp.js — Metodo Completo con Estrazione Dati Esplicita */
 
 document.addEventListener('DOMContentLoaded', function () {
   
