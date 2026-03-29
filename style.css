@@ -1169,22 +1169,34 @@ blockquote cite { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.3em; te
 }
 
 /* =========================================
-   MEGA MENU SETUP (RESPONSIVO)
+   MEGA MENU SETUP (RESPONSIVO E FIX OVERFLOW)
 ========================================= */
+.nav__item--has-dropdown {
+    position: relative;
+}
+
 .nav__dropdown--mega {
     position: absolute;
     top: 100%;
     left: 50%;
     transform: translateX(-50%) translateY(20px);
-    width: 600px;
-    max-width: 90vw; /* Impedisce al menu di strabordare dallo schermo */
+    width: 750px; /* Leggermente più largo per testi lunghi */
+    max-width: 95vw; /* Non esce mai dallo schermo lateralmente */
+    max-height: 80vh; /* Se il contenuto è troppo, attiva lo scroll interno invece di sbordare */
+    overflow-y: auto; /* Scroll abilitato per schermi bassi */
     background: #fff;
     border: 1px solid #e0e0e0;
-    display: flex;
+    
+    /* Layout Flex rigido per impedire slittamenti non voluti */
+    display: flex; 
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: stretch; 
+    
     opacity: 0;
     visibility: hidden;
     transition: all 0.4s ease;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
     z-index: 1000;
     padding: 20px;
 }
@@ -1197,17 +1209,21 @@ blockquote cite { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.3em; te
 
 /* Parte Sinistra: Categorie */
 .mega-col-left {
-    flex: 1;
+    flex: 1 1 auto;
+    min-width: 0; /* Fondamentale per far funzionare il word-wrap nel grid padre */
     padding-right: 20px;
     border-right: 1px solid #eee;
+    
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    /* Adatta le colonne automaticamente allo spazio, non stringendo mai sotto i 180px */
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
     gap: 10px;
     align-content: start;
 }
 
 /* Pulsanti Categorie */
 .nav__dropdown-btn {
+    width: 100%;
     background: #f9f9f9;
     border: 1px solid #ddd;
     padding: 10px 15px;
@@ -1219,10 +1235,13 @@ blockquote cite { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.3em; te
     cursor: pointer;
     transition: all 0.3s ease;
     color: #333;
-    /* Gestione testi lunghi */
+    
+    /* FIX TESTI LUNGHI E SBORDAMENTI */
     word-wrap: break-word; 
+    overflow-wrap: break-word;
     white-space: normal; 
     line-height: 1.4;
+    height: 100%; /* Fa sì che i bottoni sulla stessa riga abbiano sempre la stessa altezza */
 }
 
 .nav__dropdown-btn:hover {
@@ -1233,13 +1252,76 @@ blockquote cite { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.3em; te
 
 /* Parte Destra: Gestione Pulsanti Speciali */
 .mega-col-right {
-    flex: 0.8;
+    flex: 0 0 220px; /* Larghezza fissa e non restringibile per la colonna destra */
+    min-width: 0;
+    padding-left: 20px;
+    
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    justify-content: flex-start; /* Allinea in alto, evita di allargare i bottoni in modo asimmetrico */
     gap: 12px;
-    padding-left: 20px;
+}
+
+.special-btn {
+    width: 100%;
+    padding: 12px 15px;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    font-size: 0.75rem;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    display: block;
+    
+    /* FIX TESTI LUNGHI */
+    word-wrap: break-word; 
+    white-space: normal;
+    line-height: 1.4;
+}
+
+.special-btn--dark {
+    background: #1a1a1a;
+    color: white;
+    border: 1px solid #1a1a1a;
+}
+
+.special-btn--outline {
+    border: 1px solid #1a1a1a;
+    color: #1a1a1a;
+    background: transparent;
+}
+
+.special-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    background: #c5a059;
+    color: white;
+    border-color: #c5a059;
+}
+
+/* ── ADATTAMENTO RESPONSIVE PER IL MEGA MENU ── */
+@media (max-width: 900px) {
+    .nav__dropdown--mega {
+        flex-direction: column; /* Impila verticalmente la parte sinistra e destra */
+        width: 90vw;
+        padding: 15px;
+    }
+
+    .mega-col-left {
+        padding-right: 0;
+        border-right: none;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 15px;
+        margin-bottom: 15px;
+        grid-template-columns: 1fr; /* Singola colonna su mobile e tablet */
+    }
+
+    .mega-col-right {
+        padding-left: 0;
+        flex: 1 1 auto;
+        width: 100%;
+    }
 }
 
 .special-btn {
