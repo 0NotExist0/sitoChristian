@@ -1169,7 +1169,7 @@ blockquote cite { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.3em; te
 }
 
 /* =========================================
-   MEGA MENU SETUP (RESPONSIVO E FIX RESIZE BUG)
+   MEGA MENU SETUP (DEFINITIVO)
 ========================================= */
 .nav__item--has-dropdown {
     position: relative;
@@ -1190,16 +1190,14 @@ blockquote cite { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.3em; te
     display: flex; 
     flex-direction: row;
     flex-wrap: nowrap;
+    
+    /* Manteniamo stretch sul padre così il box bianco si allunga sempre fino in fondo */
     align-items: stretch; 
     
     opacity: 0;
     visibility: hidden;
-    pointer-events: none; /* Impedisce click accidentali "fantasma" quando chiuso */
-    
-    /* FIX CRITICO: Non usare "all". Anima solo opacità, visibilità e posizione. 
-       Questo impedisce al menu di "deformarsi" durante il resize della finestra. */
+    pointer-events: none; 
     transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
-    
     box-shadow: 0 20px 40px rgba(0,0,0,0.15);
     z-index: 1000;
     padding: 20px;
@@ -1222,7 +1220,10 @@ blockquote cite { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.3em; te
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
     gap: 10px;
+    
+    /* LA MAGIA È QUI: Allinea i bottoni in alto e impedisce loro di stirarsi verticalmente */
     align-content: start;
+    grid-auto-rows: min-content;
 }
 
 /* Pulsanti Categorie */
@@ -1237,8 +1238,6 @@ blockquote cite { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.3em; te
     letter-spacing: 1px;
     text-transform: uppercase;
     cursor: pointer;
-    
-    /* Limita le transizioni per evitare glitch */
     transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
     color: #333;
     
@@ -1246,7 +1245,6 @@ blockquote cite { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.3em; te
     overflow-wrap: break-word;
     white-space: normal; 
     line-height: 1.4;
-    height: 100%; 
 }
 
 .nav__dropdown-btn:hover {
@@ -1263,8 +1261,68 @@ blockquote cite { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.3em; te
     
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; 
+    justify-content: flex-start; /* Allinea anche questi bottoni in alto */
     gap: 12px;
+}
+
+.special-btn {
+    width: 100%;
+    padding: 12px 15px;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    font-size: 0.75rem;
+    text-decoration: none;
+    transition: transform 0.3s ease, box-shadow 0.3s, background 0.3s, color 0.3s, border-color 0.3s;
+    display: block;
+    word-wrap: break-word; 
+    white-space: normal;
+    line-height: 1.4;
+}
+
+.special-btn--dark {
+    background: #1a1a1a;
+    color: white;
+    border: 1px solid #1a1a1a;
+}
+
+.special-btn--outline {
+    border: 1px solid #1a1a1a;
+    color: #1a1a1a;
+    background: transparent;
+}
+
+.special-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    background: #c5a059;
+    color: white;
+    border-color: #c5a059;
+}
+
+/* ── ADATTAMENTO RESPONSIVE ── */
+@media (max-width: 768px) {
+    .nav__dropdown--mega {
+        flex-direction: column; 
+        width: 100%;
+        padding: 15px;
+    }
+
+    .mega-col-left {
+        padding-right: 0;
+        border-right: none;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 15px;
+        margin-bottom: 15px;
+        grid-template-columns: 1fr; 
+    }
+
+    .mega-col-right {
+        padding-left: 0;
+        flex: 1 1 auto;
+        width: 100%;
+    }
 }
 
 .special-btn {
