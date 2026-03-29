@@ -1,4 +1,148 @@
-/* whatsapp.js — Metodo Completo con Payload Patch */
+/* whatsapp.js — Metodo Completo con Estrazione Dati Esplicita */
+
+document.addEventListener('DOMContentLoaded', function () {
+  
+  // --- 1. RIFERIMENTI UI (GameObject) ---
+  const fab       = document.getElementById('wa-fab');
+  const overlay   = document.getElementById('wa-overlay');
+  const btnClose  = document.getElementById('wa-modal-close');
+  const form      = document.getElementById('wa-form');
+  const submitBtn = document.getElementById('wa-submit');
+  const submitTxt = document.getElementById('wa-submit-text');
+  const status    = document.getElementById('wa-status');
+  const modalBox  = document.getElementById('wa-modal');
+
+  // Riferimenti espliciti agli Input Field per l'estrazione dati manuale
+  const inputName  = document.getElementById('wa-name');
+  const inputPhone = document.getElementById('wa-phone');
+  const inputMsg   = document.getElementById('wa-message');
+
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxhAPZVyp1vHgVcQQxCXDDc8UES1Jwn1WDkgdlqBoG-kRgSOVbUwODgz4c6GZoti8Y2/exec';
+
+  // Controllo validità nodi base
+  if (!fab || !overlay || !form) return;
+
+  // --- 2. FORZATURA RENDERING (Z-Index) ---
+  fab.style.zIndex = '999998';
+  fab.style.pointerEvents = 'auto';
+
+  overlay.style.display = 'none';
+  overlay.style.position = 'fixed';
+  overlay.style.top = '0';
+  overlay.style.left = '0';
+  overlay.style.width = '100vw';
+  overlay.style.height = '100vh';
+  overlay.style.zIndex = '999999';
+  overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+  overlay.style.justifyContent = 'center';
+  overlay.style.alignItems = 'center';
+
+  if (modalBox) {
+    modalBox.style.position = 'relative';
+    modalBox.style.zIndex = '1000000';
+  }
+
+  // --- 3. GESTIONE MODALE (UI Controller) ---
+  function openModal() {
+    overlay.classList.add('open');
+    overlay.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    overlay.classList.remove('open');
+    overlay.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  fab.addEventListener('click', openModal);
+  if (btnClose) btnClose.addEventListener('click', closeModal);
+  overlay.addEventListener('click', function(e) { if (e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && overlay.style.display !== 'none') closeModal(); });
+
+  // --- 4. LOGICA DI RETE (Network Manager con Serializzazione Diretta) ---
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    // Feedback UI di caricamento
+    if (submitBtn) submitBtn.disabled = true;
+    if (submitTxt) {
+        submitTxt.textContent = "Invio in corso...";
+    } else if (submitBtn) {
+        submitBtn.innerText = "Invio in corso...";
+    }
+    
+    if (status) {
+      status.innerHTML = "";
+      status.className = "loading";
+    }
+
+    // COSTRUZIONE MANUALE DEL PACCHETTO DATI (Payload)
+    // Estraiamo il .value direttamente dagli Input, garantendo che i dati vengano letti.
+    const dataParams = new URLSearchParams();
+    
+    // Controlliamo che l'input esista prima di leggerne il valore, aggiungendo fallback
+    const nameVal  = inputName ? inputName.value.trim() : 'Sconosciuto';
+    const phoneVal = inputPhone ? inputPhone.value.trim() : '';
+    const msgVal   = inputMsg ? inputMsg.value.trim() : 'Nessun messaggio';
+
+    // Appendiamo i valori usando le chiavi esatte che Google Apps Script si aspetta
+    dataParams.append('name', nameVal);
+    dataParams.append('phone', phoneVal);
+    dataParams.append('email', 'contatto_whatsapp@luxurydoors.it'); // Dummy email di sicurezza
+    dataParams.append('message', msgVal);
+
+    // Invio dei dati al server
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: dataParams
+    })
+    .then(response => {
+      if (!response.ok) throw new Error("Errore di rete HTTP: " + response.status);
+      return response.json();
+    })
+    .then(data => {
+      // Gestione Risposta Server
+      if(data.status === "success") {
+        if (status) {
+          status.innerHTML = data.text;
+          status.className = "success";
+        }
+        form.reset();
+        setTimeout(closeModal, 2500);
+      } else {
+        if (status) {
+          status.innerHTML = data.text;
+          status.className = "error";
+        }
+      }
+      
+      // Ripristino pulsante
+      if (submitBtn) submitBtn.disabled = false;
+      if (submitTxt) {
+          submitTxt.textContent = "Invia su WhatsApp";
+      } else if (submitBtn) {
+          submitBtn.innerText = "Invia su WhatsApp";
+      }
+    })
+    .catch(error => {
+      console.error("Dettaglio Errore fetch:", error);
+      if (status) {
+        status.innerHTML = "Errore di connessione. Riprova.";
+        status.className = "error";
+      }
+      // Ripristino pulsante in caso di errore
+      if (submitBtn) submitBtn.disabled = false;
+      if (submitTxt) {
+          submitTxt.textContent = "Riprova";
+      } else if (submitBtn) {
+          submitBtn.innerText = "Riprova";
+      }
+    });
+  });
+
+});/* whatsapp.js — Metodo Completo con Payload Patch */
 
 document.addEventListener('DOMContentLoaded', function () {
   
