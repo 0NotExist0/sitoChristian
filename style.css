@@ -1169,7 +1169,7 @@ blockquote cite { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.3em; te
 }
 
 /* =========================================
-   MEGA MENU SETUP (RESPONSIVO E FIX RESIZE BUG)
+   MEGA MENU SETUP (FIX OVERFLOW BIANCO)
 ========================================= */
 .nav__item--has-dropdown {
     position: relative;
@@ -1183,23 +1183,21 @@ blockquote cite { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.3em; te
     width: 750px; 
     max-width: 95vw; 
     max-height: 80vh; 
-    overflow-y: auto; 
+    overflow-y: auto; /* Se lo schermo è basso, fa comparire la scrollbar interna */
     background: #fff;
     border: 1px solid #e0e0e0;
     
     display: flex; 
     flex-direction: row;
     flex-wrap: nowrap;
-    align-items: stretch; 
+    
+    /* FIX CRITICO: flex-start costringe il contenitore bianco ad avvolgere sempre la colonna più alta */
+    align-items: flex-start; 
     
     opacity: 0;
     visibility: hidden;
-    pointer-events: none; /* Impedisce click accidentali "fantasma" quando chiuso */
-    
-    /* FIX CRITICO: Non usare "all". Anima solo opacità, visibilità e posizione. 
-       Questo impedisce al menu di "deformarsi" durante il resize della finestra. */
+    pointer-events: none; 
     transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
-    
     box-shadow: 0 20px 40px rgba(0,0,0,0.15);
     z-index: 1000;
     padding: 20px;
@@ -1222,7 +1220,9 @@ blockquote cite { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.3em; te
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
     gap: 10px;
-    align-content: start;
+    
+    /* FIX: Forza la colonna a prendere l'altezza reale di tutti i bottoni */
+    height: max-content; 
 }
 
 /* Pulsanti Categorie */
@@ -1237,8 +1237,6 @@ blockquote cite { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.3em; te
     letter-spacing: 1px;
     text-transform: uppercase;
     cursor: pointer;
-    
-    /* Limita le transizioni per evitare glitch */
     transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
     color: #333;
     
@@ -1246,7 +1244,7 @@ blockquote cite { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.3em; te
     overflow-wrap: break-word;
     white-space: normal; 
     line-height: 1.4;
-    height: 100%; 
+    /* Rimosso height: 100% che sballava il calcolo della Grid */
 }
 
 .nav__dropdown-btn:hover {
@@ -1263,8 +1261,70 @@ blockquote cite { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.3em; te
     
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; 
     gap: 12px;
+    
+    /* FIX: Forza l'altezza reale */
+    height: max-content; 
+}
+
+.special-btn {
+    width: 100%;
+    padding: 12px 15px;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    font-size: 0.75rem;
+    text-decoration: none;
+    transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s, background 0.3s, color 0.3s, border-color 0.3s;
+    display: block;
+    word-wrap: break-word; 
+    white-space: normal;
+    line-height: 1.4;
+}
+
+.special-btn--dark {
+    background: #1a1a1a;
+    color: white;
+    border: 1px solid #1a1a1a;
+}
+
+.special-btn--outline {
+    border: 1px solid #1a1a1a;
+    color: #1a1a1a;
+    background: transparent;
+}
+
+.special-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    background: #c5a059;
+    color: white;
+    border-color: #c5a059;
+}
+
+/* ── ADATTAMENTO RESPONSIVE ── */
+@media (max-width: 768px) {
+    .nav__dropdown--mega {
+        flex-direction: column; 
+        width: 100%;
+        padding: 15px;
+    }
+
+    .mega-col-left {
+        padding-right: 0;
+        border-right: none;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 15px;
+        margin-bottom: 15px;
+        grid-template-columns: 1fr; 
+    }
+
+    .mega-col-right {
+        padding-left: 0;
+        flex: 1 1 auto;
+        width: 100%;
+    }
 }
 
 .special-btn {
