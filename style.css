@@ -1168,16 +1168,19 @@ blockquote cite { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.3em; te
     position: relative;
 }
 
-/* Mega Menu Setup */
+/* =========================================
+   MEGA MENU SETUP (RESPONSIVO)
+========================================= */
 .nav__dropdown--mega {
     position: absolute;
     top: 100%;
     left: 50%;
     transform: translateX(-50%) translateY(20px);
-    width: 600px; /* Larghezza del menu */
+    width: 600px;
+    max-width: 90vw; /* Impedisce al menu di strabordare dallo schermo */
     background: #fff;
     border: 1px solid #e0e0e0;
-    display: flex; /* Divide in due orizzontalmente */
+    display: flex;
     opacity: 0;
     visibility: hidden;
     transition: all 0.4s ease;
@@ -1198,7 +1201,7 @@ blockquote cite { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.3em; te
     padding-right: 20px;
     border-right: 1px solid #eee;
     display: grid;
-    grid-template-columns: 1fr 1fr; /* Due colonne di bottoni */
+    grid-template-columns: 1fr 1fr;
     gap: 10px;
     align-content: start;
 }
@@ -1216,6 +1219,10 @@ blockquote cite { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.3em; te
     cursor: pointer;
     transition: all 0.3s ease;
     color: #333;
+    /* Gestione testi lunghi */
+    word-wrap: break-word; 
+    white-space: normal; 
+    line-height: 1.4;
 }
 
 .nav__dropdown-btn:hover {
@@ -1224,15 +1231,76 @@ blockquote cite { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.3em; te
     border-color: #000;
 }
 
-/* Parte Destra: Gestione 3 Pulsanti */
+/* Parte Destra: Gestione Pulsanti Speciali */
 .mega-col-right {
     flex: 0.8;
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Centra verticalmente i 3 pulsanti */
+    justify-content: center;
     align-items: center;
-    gap: 12px; /* Spazio ridotto per far stare tutto comodamente */
+    gap: 12px;
     padding-left: 20px;
+}
+
+.special-btn {
+    width: 100%;
+    padding: 12px 15px;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    font-size: 0.75rem;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    display: block;
+    /* Gestione testi lunghi */
+    word-wrap: break-word; 
+    white-space: normal;
+    line-height: 1.4;
+}
+
+.special-btn--dark {
+    background: #1a1a1a;
+    color: white;
+    border: 1px solid #1a1a1a;
+}
+
+.special-btn--outline {
+    border: 1px solid #1a1a1a;
+    color: #1a1a1a;
+    background: transparent;
+}
+
+.special-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    background: #c5a059;
+    color: white;
+    border-color: #c5a059;
+}
+
+/* ── ADATTAMENTO RESPONSIVE PER IL MEGA MENU ── */
+@media (max-width: 900px) {
+    .nav__dropdown--mega {
+        flex-direction: column; /* Impila verticalmente la parte sinistra e destra */
+        width: 90vw;
+        padding: 15px;
+    }
+
+    .mega-col-left {
+        padding-right: 0;
+        border-right: none;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 15px;
+        margin-bottom: 15px;
+        grid-template-columns: 1fr; /* Passa a una singola colonna per i bottoni interni */
+    }
+
+    .mega-col-right {
+        padding-left: 0;
+        flex-direction: column;
+        width: 100%;
+    }
 }
 
 .special-btn {
