@@ -2158,3 +2158,319 @@ body.day-theme #cursorDot {
     background-position: 200% center;
   }
 }
+
+/* ================================================
+   WHATSAPP FLOATING WIDGET — Luxury Doors Theme
+   Appendi questo blocco in fondo a style.css
+   ================================================ */
+
+/* ── FAB ── */
+#wa-fab {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 20px 0 14px;
+  height: 52px;
+  background: var(--color-dark, #0d0d0d);
+  border: 1px solid var(--color-gold, #c9a84c);
+  border-radius: 0;                     /* segue il design sharp del sito */
+  color: var(--color-gold, #c9a84c);
+  font-family: 'Raleway', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  overflow: hidden;
+  transition: background 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  /* variabile interna usata dall'SVG per il fill del logo WA */
+  --wa-bg: #0d0d0d;
+}
+
+#wa-fab::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--color-gold, #c9a84c);
+  transform: translateX(-101%);
+  transition: transform 0.35s cubic-bezier(0.76, 0, 0.24, 1);
+  z-index: 0;
+}
+#wa-fab:hover::before { transform: translateX(0); }
+#wa-fab:hover { color: #0d0d0d; --wa-bg: #0d0d0d; }
+#wa-fab:hover svg path:first-child { fill: #0d0d0d; }
+
+#wa-fab svg,
+#wa-fab .wa-fab__label { position: relative; z-index: 1; }
+
+/* pulse dorato (attivo solo quando il modale è chiuso) */
+#wa-fab.pulse {
+  animation: wa-gold-pulse 3s ease-in-out infinite;
+}
+@keyframes wa-gold-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(201,168,76,0); }
+  50%       { box-shadow: 0 0 0 8px rgba(201,168,76,0.18); }
+}
+
+/* ── OVERLAY ── */
+#wa-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(5, 4, 3, 0.72);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+#wa-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ── MODALE ── */
+#wa-modal {
+  background: var(--color-dark, #0d0d0d);
+  border: 1px solid var(--color-gold, #c9a84c);
+  border-bottom: none;
+  width: 100%;
+  max-width: 520px;
+  transform: translateY(32px);
+  transition: transform 0.4s cubic-bezier(0.34, 1.2, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+}
+/* cornice interna dorata sottilissima */
+#wa-modal::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgba(201,168,76,0.15);
+  pointer-events: none;
+  z-index: 0;
+}
+#wa-overlay.open #wa-modal { transform: translateY(0); }
+
+/* Header */
+.wa-modal__header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 22px 24px 18px;
+  border-bottom: 1px solid rgba(201,168,76,0.2);
+  position: relative;
+  z-index: 1;
+}
+.wa-modal__header-deco {
+  font-size: 22px;
+  color: var(--color-gold, #c9a84c);
+  line-height: 1;
+  flex-shrink: 0;
+}
+.wa-modal__header-text h3 {
+  margin: 0 0 3px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--color-gold, #c9a84c);
+  letter-spacing: 0.04em;
+}
+.wa-modal__header-text p {
+  margin: 0;
+  font-family: 'Raleway', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(201,168,76,0.5);
+}
+.wa-modal__close {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: rgba(201,168,76,0.5);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 8px;
+  font-family: 'Raleway', sans-serif;
+  letter-spacing: 0.1em;
+  transition: color 0.2s;
+  flex-shrink: 0;
+}
+.wa-modal__close:hover { color: var(--color-gold, #c9a84c); }
+
+/* Body */
+.wa-modal__body {
+  padding: 24px 24px 16px;
+  position: relative;
+  z-index: 1;
+}
+.wa-modal__intro {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 15px;
+  font-weight: 300;
+  color: rgba(201,168,76,0.65);
+  margin: 0 0 22px;
+  line-height: 1.6;
+}
+
+/* Campi form — stile identico al contactForm del sito */
+#wa-form { display: flex; flex-direction: column; gap: 16px; }
+
+.wa-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.wa-field {
+  position: relative;
+}
+.wa-field input,
+.wa-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(201,168,76,0.25);
+  padding: 14px 0 8px;
+  font-family: 'Raleway', sans-serif;
+  font-size: 13px;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  color: #e8dcc8;
+  outline: none;
+  resize: none;
+  transition: border-color 0.3s;
+}
+.wa-field input:focus,
+.wa-field textarea:focus { border-bottom-color: var(--color-gold, #c9a84c); }
+
+.wa-field label {
+  position: absolute;
+  top: 14px;
+  left: 0;
+  font-family: 'Raleway', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(201,168,76,0.4);
+  pointer-events: none;
+  transition: transform 0.25s ease, font-size 0.25s ease, color 0.25s ease;
+}
+.wa-field input:focus ~ label,
+.wa-field input:not(:placeholder-shown) ~ label,
+.wa-field textarea:focus ~ label,
+.wa-field textarea:not(:placeholder-shown) ~ label {
+  transform: translateY(-18px);
+  font-size: 10px;
+  color: var(--color-gold, #c9a84c);
+}
+
+.wa-field__line {
+  position: absolute;
+  bottom: 0; left: 0;
+  height: 1px;
+  width: 0;
+  background: var(--color-gold, #c9a84c);
+  transition: width 0.35s ease;
+}
+.wa-field input:focus ~ .wa-field__line,
+.wa-field textarea:focus ~ .wa-field__line { width: 100%; }
+
+/* Status */
+#wa-status {
+  font-family: 'Raleway', sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  min-height: 16px;
+  padding: 0 2px;
+}
+.wa-status--success { color: var(--color-gold, #c9a84c); }
+.wa-status--error   { color: #c0614a; }
+
+/* Submit — clone del .form-submit del sito */
+#wa-submit {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 16px 20px;
+  background: transparent;
+  border: 1px solid var(--color-gold, #c9a84c);
+  color: var(--color-gold, #c9a84c);
+  font-family: 'Raleway', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: color 0.35s;
+  margin-top: 4px;
+}
+#wa-submit::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--color-gold, #c9a84c);
+  transform: translateX(-101%);
+  transition: transform 0.4s cubic-bezier(0.76, 0, 0.24, 1);
+}
+#wa-submit:hover::before  { transform: translateX(0); }
+#wa-submit:hover          { color: #0d0d0d; }
+#wa-submit:disabled       { opacity: 0.5; cursor: not-allowed; }
+#wa-submit:disabled::before { transform: translateX(-101%); }
+
+#wa-submit-text,
+.wa-submit__icon { position: relative; z-index: 1; }
+
+/* Footer modale */
+.wa-modal__footer {
+  padding: 10px 24px 18px;
+  text-align: center;
+  font-family: 'Raleway', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(201,168,76,0.2);
+  position: relative;
+  z-index: 1;
+}
+
+/* ── RESPONSIVE ── */
+@media (min-width: 540px) {
+  #wa-modal { border-bottom: 1px solid var(--color-gold, #c9a84c); margin-bottom: 32px; }
+  #wa-overlay { align-items: center; }
+}
+@media (max-width: 480px) {
+  .wa-form-row { grid-template-columns: 1fr; }
+  #wa-fab .wa-fab__label { display: none; }
+  #wa-fab { padding: 0; width: 52px; justify-content: center; border-radius: 50%; }
+}
+
+/* ── LIGHT MODE (se il sito supporta tema chiaro) ── */
+[data-theme="light"] #wa-fab,
+body.light #wa-fab {
+  background: #faf7f0;
+  --wa-bg: #faf7f0;
+}
+[data-theme="light"] #wa-modal,
+body.light #wa-modal {
+  background: #faf7f0;
+  color: #1a1207;
+}
+[data-theme="light"] .wa-field input,
+[data-theme="light"] .wa-field textarea,
+body.light .wa-field input,
+body.light .wa-field textarea {
+  color: #1a1207;
+}
