@@ -1,5 +1,5 @@
 /* ============================================================
-   MARQUEE ENGINE — SISTEMA OLYMPUS (VERSIONE DRIVE-RANDOM)
+   MARQUEE ENGINE — SISTEMA OLYMPUS (VERSIONE DEEP-SCAN)
    ============================================================ */
 
 class InfiniteMarquee {
@@ -13,13 +13,13 @@ class InfiniteMarquee {
     }
 
     /**
-     * Converte i link di Google Drive in formati leggibili dal browser
+     * Trasforma i link Drive per renderli visibili
      */
     formatDriveUrl(url) {
         if (!url || typeof url !== 'string') return '';
         let id = '';
         if (url.includes('/file/d/')) {
-            id = url.split('/file/d/')[1].split('/')[0].split('?')[0];
+            id = url.split('/file/d/')[1].split('/')[0];
         } else if (url.includes('id=')) {
             id = new URLSearchParams(url.split('?')[1]).get('id');
         }
@@ -27,36 +27,54 @@ class InfiniteMarquee {
     }
 
     /**
-     * Mescola l'array delle immagini in modo casuale
+     * FUNZIONE CHIAVE: Scansiona tutte le cartelle e sottocartelle
+     * per trovare ogni singolo file immagine.
      */
-    shuffle(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
+    deepExtractImages(node) {
+        let results = [];
+        if (!node) return results;
+
+        // 1. Se è un file ed è un'immagine, lo prendiamo
+        if (node.type === 'file' || (node.url && !node.children)) {
+            const isImg = /\.(jpg|jpeg|png|webp|gif)$/i.test(node.name || node.url);
+            if (isImg) results.push(node);
         }
-        return array;
+
+        // 2. Se ha dei figli (cartella), entra dentro ognuno di essi (Ricorsione)
+        if (node.children && Array.isArray(node.children)) {
+            node.children.forEach(child => {
+                results = results.concat(this.deepExtractImages(child));
+            });
+        }
+        
+        // Gestione se node è direttamente un array (il root)
+        if (Array.isArray(node)) {
+            node.forEach(item => {
+                results = results.concat(this.deepExtractImages(item));
+            });
+        }
+
+        return results;
     }
 
     nextImageTag() {
-        // Se non ci sono immagini, usiamo un placeholder di design
-        const placeholder = "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=300&auto=format&fit=crop";
+        // Placeholder se proprio non troviamo nulla (grigio neutro)
+        const placeholder = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
         
-        if (this.images.length === 0) {
-            return `<img src="${placeholder}" class="marquee-img">`;
-        }
+        if (this.images.length === 0) return `<img src="${placeholder}" class="marquee-img">`;
 
         const item = this.images[this.imgIndex % this.images.length];
         this.imgIndex++;
 
-        const rawUrl = (typeof item === 'string') ? item : (item.url || item.src || "");
+        const rawUrl = (typeof item === 'string') ? item : (item.url || item.link || "");
         const finalSrc = this.formatDriveUrl(rawUrl);
 
         return `<img
             src="${finalSrc}"
             class="marquee-img"
             loading="lazy"
-            alt="Porta Nova"
-            onerror="this.src='${placeholder}';"
+            alt="Porta Nova Design"
+            onerror="this.style.opacity='0';" 
         >`;
     }
 
@@ -72,61 +90,59 @@ class InfiniteMarquee {
     }
 
     buildMarquee() {
+        if (this.images.length === 0) return;
         this.track.innerHTML = '';
         this.imgIndex = 0;
 
-        // Creiamo abbastanza copie per coprire lo schermo
-        const segmentHtml = this.createSegment();
+        let totalHtml = '';
+        for (let i = 0; i < 8; i++) totalHtml += this.createSegment();
+        
         const container = document.createElement('div');
         container.className = 'marquee-content';
-        
-        // Generiamo circa 10 ripetizioni per sicurezza
-        let totalHtml = '';
-        for (let i = 0; i < 10; i++) totalHtml += segmentHtml;
-        
         container.innerHTML = totalHtml;
-        const blockB = container.cloneNode(true);
-
+        
         this.track.appendChild(container);
-        this.track.appendChild(blockB);
+        this.track.appendChild(container.cloneNode(true));
     }
 
     init() {
-        // 1. Attendi che i dati siano pronti
-        if (!window.galleryData || typeof DataEngine === 'undefined') {
+        if (!window.galleryData) {
             setTimeout(() => this.init(), 500);
             return;
         }
 
-        console.log("Marquee: Analizzo cartelle per immagini...");
+        console.log("Marquee: Avvio scansione profonda del catalogo...");
 
-        // 2. Cerchiamo le cartelle specifiche nel tuo catalogo
-        const folderNames = ["Rivestimenti in alluminio", "Rivestimenti in Legno"];
-        let combinedImages = [];
+        // Cerchiamo le cartelle madri che hai indicato
+        const targetFolders = ["Rivestimenti in alluminio", "Rivestimenti in Legno"];
+        let allFoundFiles = [];
 
-        folderNames.forEach(name => {
-            const folder = DataEngine.findFolder(window.galleryData, name);
-            if (folder) {
-                const imgs = DataEngine.extractImages(folder);
-                combinedImages = combinedImages.concat(imgs);
-                console.log(`Trovate ${imgs.length} immagini in: ${name}`);
+        targetFolders.forEach(folderName => {
+            // Troviamo la cartella principale nel JSON
+            const rootFolder = typeof DataEngine !== 'undefined' 
+                ? DataEngine.findFolder(window.galleryData, folderName)
+                : null;
+
+            if (rootFolder) {
+                const folderFiles = this.deepExtractImages(rootFolder);
+                allFoundFiles = allFoundFiles.concat(folderFiles);
+                console.log(`Trovate ${folderFiles.length} immagini in ${folderName} (incluse sottocartelle)`);
             }
         });
 
-        // 3. Mescoliamo a caso
-        this.images = this.shuffle(combinedImages);
-
-        // 4. Se non troviamo nulla, prendiamo tutto il catalogo come fallback
-        if (this.images.length === 0) {
-            console.warn("Cartelle specifiche non trovate, uso catalogo intero.");
-            this.images = this.shuffle(DataEngine.extractImages(window.galleryData));
+        // Se non troviamo nulla nelle cartelle specifiche, prendiamo TUTTO il Drive
+        if (allFoundFiles.length === 0) {
+            console.warn("Cartelle specifiche vuote o non trovate. Scansiono intero Drive...");
+            allFoundFiles = this.deepExtractImages(window.galleryData);
         }
 
+        // Mescoliamo a caso le porte trovate
+        this.images = allFoundFiles.sort(() => Math.random() - 0.5);
+        
         this.buildMarquee();
     }
 }
 
-/* Avvio automatico */
 document.addEventListener('DOMContentLoaded', () => {
     new InfiniteMarquee('dynamicMarquee');
 });
