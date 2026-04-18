@@ -64,42 +64,6 @@ body::after {
 ::-webkit-scrollbar-track { background: var(--black); }
 ::-webkit-scrollbar-thumb { background: linear-gradient(to bottom, var(--gold-lt), var(--gold), var(--gold-dk)); border-radius: 2px; }
 
-/* ── CURSOR (SCINTILLA DIVINA) ────────────────────────────── */
-#cursorDot {
-  position: fixed;
-  top: 0; left: 0;
-  width: 8px; height: 8px;
-  background: var(--white);
-  box-shadow: 0 0 10px var(--gold-lt), 0 0 20px var(--lightning);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 999999;
-  transform: translate(-50%, -50%);
-  transition: transform 0.1s ease-out, width 0.3s, height 0.3s;
-}
-
-#cursorRing {
-  position: fixed;
-  top: 0; left: 0;
-  width: 40px; height: 40px;
-  border: 1px solid var(--gold-lt);
-  box-shadow: 0 0 15px rgba(212, 175, 55, 0.3) inset;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 999998;
-  transform: translate(-50%, -50%);
-  transition: transform 0.15s ease-out, width 0.35s var(--ease-smooth), height 0.35s var(--ease-smooth), border-color 0.3s, opacity 0.3s;
-  opacity: 0.8;
-}
-
-#cursorRing.hovering {
-  width: 60px; height: 60px;
-  border-color: var(--white);
-  background: rgba(255, 255, 255, 0.05);
-  box-shadow: 0 0 25px var(--gold-glow);
-  opacity: 1;
-}
-
 /* ── TYPOGRAPHY BASE ──────────────────────────────────────── */
 h1, h2, h3, h4 { font-family: var(--ff-display); font-weight: 300; line-height: 1.1; text-transform: uppercase; letter-spacing: 0.05em; }
 em { font-style: italic; color: var(--gold); text-transform: none; }
@@ -123,50 +87,125 @@ a { color: inherit; text-decoration: none; }
   from { opacity: 0; transform: translateY(32px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-/* ── MARQUEE ──────────────────────────────────────────────── */
+/* ============================================================
+   MARQUEE — PATCH FINALE (sostituisce TUTTE le sezioni
+   .marquee-* presenti in style.css con questo blocco unico)
+   ============================================================ */
+
+/* ── Striscia contenitore ── */
 .marquee-strip {
-  background: var(--surface);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  padding: 1.2rem 0;
-  overflow: hidden;
-  width: 100vw;
-  position: relative;
+    background: var(--surface);
+    border-top:    1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;          /* ← SOLO QUI l'overflow:hidden */
+    width: 100vw;
+    position: relative;
+    box-shadow: 0 5px 30px rgba(0,0,0,0.8) inset;
+
+    /* Fade laterale luxury */
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+    mask-image:         linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
 }
 
-.marquee-track {
-  display: flex;
-  width: max-content;   /* ← CRITICO: senza questo non scorre */
-  animation: marqueeScroll 30s linear infinite;
+/* ── Track: è l'elemento #dynamicMarquee creato dal JS ──
+   L'animazione VA QUI, su translateX(-50%), perché il track
+   contiene DUE blocchi .marquee-content identici:
+   spostandosi del 50% torna esattamente all'inizio → loop seamless ── */
+#dynamicMarquee {
+    display: flex;
+    align-items: center;
+    width: max-content;        /* si allarga quanto serve */
+    height: 64px;              /* altezza barra */
+    will-change: transform;
+    animation: marqueeScroll 32s linear infinite;
 }
 
+/* Pausa al hover */
+.marquee-strip:hover #dynamicMarquee {
+    animation-play-state: paused;
+}
+
+/* Pausa se scheda in background (impostata via JS, ma anche qui per sicurezza) */
+#dynamicMarquee[style*="paused"] {
+    animation-play-state: paused;
+}
+
+/* ── I due blocchi clonati dal JS ── */
 .marquee-content {
-  display: inline-flex;
-  align-items: center;
-  flex-shrink: 0;       /* ← CRITICO: impedisce la compressione */
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    /* NESSUNA animation qui — l'animazione è solo sul track */
 }
 
+/* ── IMMAGINI ── */
+.marquee-img {
+    display:        inline-block;
+    height:         44px;      /* altezza fissa — modifica questo se vuoi più/meno grande */
+    width:          auto;      /* larghezza proporzionale automatica */
+    min-width:      55px;
+    max-width:      110px;
+    object-fit:     cover;
+    object-position: center;
+    border-radius:  2px;
+    flex-shrink:    0;
+    vertical-align: middle;
+    opacity:        0.85;
+    outline:        1px solid rgba(212,175,55,0.3);
+    transition:     opacity 0.3s ease, transform 0.3s ease;
+}
+
+.marquee-img:hover {
+    opacity:       1;
+    transform:     scale(1.06);
+    outline-color: var(--gold-lt);
+}
+
+/* ── Testi ── */
 .marquee-content span {
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  color: var(--text);
-  white-space: nowrap;
-  margin-right: 3rem;
-  display: inline-block;
+    display:        inline-flex;
+    align-items:    center;
+    padding:        0 22px;
+    font-family:    var(--ff-body);
+    font-size:      0.75rem;
+    font-weight:    600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color:          var(--text);
+    white-space:    nowrap;
+    flex-shrink:    0;
 }
 
+/* ── Separatori ── */
 .marquee-content .sep {
-  color: var(--gold-lt);
-  letter-spacing: 0;
-  text-shadow: 0 0 15px var(--white);
+    padding:    0 10px;
+    color:      var(--gold-lt);
+    letter-spacing: 0;
+    text-shadow: 0 0 15px var(--white);
+    flex-shrink: 0;
 }
 
+/* ── Keyframe (translateX -50% = si sposta di 1 blocco su 2 → loop) ── */
 @keyframes marqueeScroll {
-  0% { transform: translate3d(0, 0, 0); }
-  100% { transform: translate3d(-50%, 0, 0); }
+    0%   { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(-50%, 0, 0); }
 }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    #dynamicMarquee { height: 52px; animation-duration: 22s; }
+    .marquee-img    { height: 34px; }
+}
+@media (max-width: 480px) {
+    #dynamicMarquee { height: 44px; animation-duration: 18s; }
+    .marquee-img    { height: 28px; }
+}
+
+/* ── Accessibilità ── */
+@media (prefers-reduced-motion: reduce) {
+    #dynamicMarquee { animation: none; }
+}
+
 @keyframes doorOpen {
   0%   { transform: perspective(1000px) rotateY(0deg); box-shadow: 0 0 0 transparent; }
   100% { transform: perspective(1000px) rotateY(-85deg); box-shadow: -20px 0 50px var(--gold-glow); }
@@ -2762,58 +2801,4 @@ body.light .wa-field textarea {
     * { cursor: auto !important; }
     /* Nascosto di default: appare solo al tocco via JS */
     #custom-cursor { opacity: 0; }
-}
-
-/* ── Marquee track ── */
-.marquee-track {
-    display: flex;
-    overflow: hidden;
-    white-space: nowrap;
-    align-items: center;
-    height: 48px;          /* altezza della barra */
-}
-
-.marquee-content {
-    display: inline-flex;
-    align-items: center;
-    gap: 0;
-    animation: marquee-scroll 30s linear infinite;
-    will-change: transform;
-}
-
-.marquee-content[aria-hidden="true"] {
-    animation-delay: -15s; /* metà del tempo → loop perfetto */
-}
-
-/* ── QUESTO È IL FIX PRINCIPALE ── */
-.marquee-img {
-    height: 36px;          /* altezza fissa proporzionata alla barra */
-    width: auto;           /* larghezza automatica mantiene le proporzioni */
-    object-fit: cover;
-    border-radius: 3px;
-    display: inline-block;
-    vertical-align: middle;
-    flex-shrink: 0;        /* impedisce la compressione nel flex */
-}
-
-/* Separatori e testi */
-.marquee-content span {
-    display: inline-flex;
-    align-items: center;
-    padding: 0 18px;
-    font-size: 11px;
-    letter-spacing: 0.15em;
-    color: #c9a84c;
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-
-.marquee-content .sep {
-    padding: 0 8px;
-    opacity: 0.5;
-}
-
-@keyframes marquee-scroll {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-50%); }
 }
