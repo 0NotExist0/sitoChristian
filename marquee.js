@@ -1,5 +1,5 @@
 /* ============================================================
-   MARQUEE ENGINE — PORTA NOVA (INTEGRAZIONE DATA ENGINE)
+   MARQUEE ENGINE — PORTA NOVA (VERSIONE ANTI-FLICKER)
    ============================================================ */
 
 class InfiniteMarquee {
@@ -7,13 +7,14 @@ class InfiniteMarquee {
         this.track = document.getElementById(trackId);
         if (!this.track) return;
 
+        this.images = [];
         this.imgIndex = 0;
-        this.images   = [];
+        this.isInitialized = false;
         this.init();
     }
 
     /**
-     * Trasforma i link Drive per renderli visibili (Necessario per i tag IMG)
+     * Trasforma l'ID Drive in un link immagine ad alta compatibilità
      */
     formatDriveUrl(url) {
         if (!url || typeof url !== 'string') return '';
@@ -21,17 +22,12 @@ class InfiniteMarquee {
         if (url.includes('/file/d/')) {
             id = url.split('/file/d/')[1].split('/')[0];
         } else if (url.includes('id=')) {
-            const params = new URLSearchParams(url.split('?')[1]);
-            id = params.get('id');
+            const match = url.match(/id=([^&]+)/);
+            id = match ? match[1] : '';
         }
-        return id ? `https://drive.google.com/uc?export=view&id=${id}` : url;
-    }
-
-    /**
-     * Funzione per mescolare l'array (Random)
-     */
-    shuffle(array) {
-        return array.sort(() => Math.random() - 0.5);
+        
+        // Formato alternativo più stabile per evitare i blocchi di Google
+        return id ? `https://lh3.googleusercontent.com/d/${id}` : url;
     }
 
     nextImageTag() {
@@ -40,19 +36,23 @@ class InfiniteMarquee {
         const item = this.images[this.imgIndex % this.images.length];
         this.imgIndex++;
 
-        // Usiamo la formattazione Drive per essere sicuri che si veda
         const finalSrc = this.formatDriveUrl(item);
+        
+        // Placeholder neutro (un rettangolo dorato sfumato) se l'immagine fallisce
+        const fallback = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==";
 
+        // RIMOSSO display='none'. Ora se c'è un errore mette il fallback ma NON sparisce.
         return `<img
             src="${finalSrc}"
             class="marquee-img"
-            loading="lazy"
             alt="Porta Nova"
-            onerror="this.style.display='none';"
+            loading="eager" 
+            onerror="this.onerror=null; this.src='${fallback}'; this.style.opacity='0.5';"
         >`;
     }
 
     createSegment() {
+        // Aumentiamo i separatori per dare stabilità visiva
         return `
             <span>MADE IN ITALY</span><span class="sep">◈</span>
             ${this.nextImageTag()}<span class="sep">◈</span>
@@ -64,68 +64,65 @@ class InfiniteMarquee {
     }
 
     build() {
-        if (this.images.length === 0) return;
+        if (this.images.length === 0 || this.isInitialized) return;
         
         this.track.innerHTML = '';
-        this.imgIndex = 0;
+        const container = document.createElement('div');
+        container.className = 'marquee-content';
 
-        // Creiamo il contenuto (abbastanza lungo da coprire lo scorrimento)
-        let contentHtml = '';
-        for (let i = 0; i < 10; i++) {
-            contentHtml += this.createSegment();
+        // Generiamo una stringa lunga per evitare "salti" nell'animazione
+        let htmlContent = '';
+        for (let i = 0; i < 12; i++) {
+            htmlContent += this.createSegment();
         }
 
-        const blockA = document.createElement('div');
-        blockA.className = 'marquee-content';
-        blockA.innerHTML = contentHtml;
+        container.innerHTML = htmlContent;
+        
+        // Cloniamo per l'effetto infinito
+        const clone = container.cloneNode(true);
+        clone.setAttribute('aria-hidden', 'true');
 
-        const blockB = blockA.cloneNode(true);
-        blockB.setAttribute('aria-hidden', 'true');
-
-        this.track.appendChild(blockA);
-        this.track.appendChild(blockB);
+        this.track.appendChild(container);
+        this.track.appendChild(clone);
+        
+        this.isInitialized = true;
+        console.log("Marquee: Build completata con " + this.images.length + " immagini.");
     }
 
     init() {
-        // 1. Aspettiamo che window.galleryData e DataEngine siano pronti
+        // Aspettiamo che window.galleryData e DataEngine siano pronti
         if (!window.galleryData || typeof DataEngine === 'undefined') {
-            setTimeout(() => this.init(), 500);
+            setTimeout(() => this.init(), 300);
             return;
         }
 
-        // 2. Usiamo il TUO DataEngine per trovare le cartelle esatte
-        // Nomi presi dal tuo CatalogSchema:
-        const foldersToSearch = [
-            'Rivestimenti in alluminio + inseriti', 
-            'Rivestimenti in Legno',
-            'Pannelli in alluminio'
-        ];
+        // Recuperiamo i file usando il TUO DataEngine
+        // Cerchiamo in Alluminio e Legno come da tua richiesta
+        const folders = ['Rivestimenti in alluminio + inseriti', 'Rivestimenti in Legno', 'Pannelli in alluminio'];
+        let allImgs = [];
 
-        let collectedImages = [];
-
-        foldersToSearch.forEach(folderName => {
-            const folderData = DataEngine.findFolder(window.galleryData, folderName);
-            if (folderData) {
-                // Usiamo la TUA funzione extractImages che funziona sicuramente
-                const imgs = DataEngine.extractImages(folderData);
-                collectedImages = collectedImages.concat(imgs);
+        folders.forEach(f => {
+            const data = DataEngine.findFolder(window.galleryData, f);
+            if (data) {
+                allImgs = allImgs.concat(DataEngine.extractImages(data));
             }
         });
 
-        // 3. Se non ha trovato nulla con quei nomi, prende tutto come backup
-        if (collectedImages.length === 0) {
-            collectedImages = DataEngine.extractImages(window.galleryData);
+        // Se non trova nulla nelle cartelle specifiche, pesca ovunque
+        if (allImgs.length === 0) {
+            allImgs = DataEngine.extractImages(window.galleryData);
         }
 
-        // 4. Mescoliamo a caso e costruiamo
-        this.images = this.shuffle(collectedImages);
-        this.build();
+        // Mescola a caso
+        this.images = allImgs.sort(() => Math.random() - 0.5);
+
+        if (this.images.length > 0) {
+            this.build();
+        }
     }
 }
 
-// Avvio dopo un piccolo delay per dare tempo al CatalogManager di caricare
+// Avvio rapido
 document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
-        new InfiniteMarquee('dynamicMarquee');
-    }, 1000);
+    new InfiniteMarquee('dynamicMarquee');
 });
