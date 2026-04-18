@@ -1,69 +1,114 @@
 const CursorManager = {
+
+    cursor: null,
+    isMobile: false,
+
+    interactables: `
+        a, button, input, textarea, select,
+        .hero__cta, .gold-btn, .special-btn,
+        .nav__link, .nav__dropdown-btn, .dropdown-link,
+        .corridor__door, .collection-card, .work-item,
+        .stat-card, .lightbox__btn, .lightbox__close,
+        .lightbox__back-btn, .sidebar-card, .lightbox__subcard,
+        #wa-fab, #wa-submit
+    `,
+
     init() {
-        const cursor = document.getElementById('custom-cursor');
-        
-        // Sicurezza: se per qualche motivo manca il div nell'HTML, lo script non crasha
-        if (!cursor) {
-            console.warn("CursorManager: Elemento #custom-cursor non trovato nel DOM.");
-            return;
-        }
+        this.cursor = document.getElementById('custom-cursor');
+        if (!this.cursor) return;
 
-        // 1. TRACCIAMENTO ISTANTANEO (Zero Lag, rapporto 1:1)
-        // Usiamo translate3d per sfruttare l'accelerazione hardware della GPU
+        this.isMobile = window.matchMedia('(max-width: 768px)').matches;
+        window.matchMedia('(max-width: 768px)').addEventListener('change', (e) => {
+            this.isMobile = e.matches;
+            this.reset();
+        });
+
+        this.bindMouse();
+        this.bindTouch();
+    },
+
+    move(x, y) {
+        this.cursor.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+    },
+
+    show()        { this.cursor.style.opacity = '1'; },
+    hide()        { this.cursor.style.opacity = '0'; },
+    setHover(on)  { this.cursor.classList.toggle('is-hovering', on); },
+    setClick(on)  { this.cursor.classList.toggle('is-clicking', on); },
+
+    reset() {
+        this.setHover(false);
+        this.setClick(false);
+        this.hide();
+    },
+
+    bindMouse() {
         document.addEventListener('mousemove', (e) => {
-            cursor.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+            if (this.isMobile) return;
+            this.move(e.clientX, e.clientY);
         });
 
-        // 2. GESTIONE HOVER (Tutte le tue classi interattive del tema Olympus)
-        // Ho incluso bottoni d'oro, link della nav, input, porte 3D e icone di WhatsApp
-        const interactables = `
-            a, button, input, textarea, select, 
-            .hero__cta, .gold-btn, .special-btn, 
-            .nav__link, .nav__dropdown-btn, .dropdown-link,
-            .corridor__door, .collection-card, .work-item, 
-            .stat-card, .lightbox__btn, .lightbox__close, 
-            .lightbox__back-btn, .sidebar-card, .lightbox__subcard,
-            #wa-fab, #wa-submit
-        `;
-        
         document.addEventListener('mouseover', (e) => {
-            // Verifica se il cursore è entrato in uno degli elementi interattivi o nei loro figli
-            if (e.target.closest(interactables)) {
-                cursor.classList.add('is-hovering');
-            }
-        });
-        
-        document.addEventListener('mouseout', (e) => {
-            // Verifica se il cursore è uscito dall'elemento interattivo
-            if (e.target.closest(interactables)) {
-                cursor.classList.remove('is-hovering');
-            }
+            if (this.isMobile) return;
+            this.setHover(!!e.target.closest(this.interactables));
         });
 
-        // 3. GESTIONE CLICK E RIDIMENSIONAMENTO
+        document.addEventListener('mouseout', (e) => {
+            if (this.isMobile) return;
+            if (e.target.closest(this.interactables)) this.setHover(false);
+        });
+
         document.addEventListener('mousedown', () => {
-            cursor.classList.add('is-clicking');
+            if (this.isMobile) return;
+            this.setClick(true);
         });
-        
+
         document.addEventListener('mouseup', () => {
-            cursor.classList.remove('is-clicking');
+            if (this.isMobile) return;
+            this.setClick(false);
         });
-        
-        // Fallback: se l'utente clicca e trascina il mouse fuori dalla finestra del browser
+
         document.addEventListener('mouseleave', () => {
-            cursor.classList.remove('is-clicking');
-            // Nascondiamo il cursore personalizzato se usciamo dalla finestra
-            cursor.style.opacity = '0';
+            if (this.isMobile) return;
+            this.setClick(false);
+            this.hide();
         });
 
         document.addEventListener('mouseenter', () => {
-            // Riappare appena il mouse rientra nella finestra
-            cursor.style.opacity = '1';
+            if (this.isMobile) return;
+            this.show();
+        });
+    },
+
+    bindTouch() {
+        document.addEventListener('touchstart', (e) => {
+            if (!this.isMobile) return;
+            const t = e.touches[0];
+            this.move(t.clientX, t.clientY);
+            this.show();
+            this.setHover(true);
+            this.setClick(true);
+        }, { passive: true });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!this.isMobile) return;
+            const t = e.touches[0];
+            this.move(t.clientX, t.clientY);
+        }, { passive: true });
+
+        document.addEventListener('touchend', () => {
+            if (!this.isMobile) return;
+            this.setClick(false);
+            this.setHover(false);
+            this.hide();
+        });
+
+        document.addEventListener('touchcancel', () => {
+            if (!this.isMobile) return;
+            this.reset();
         });
     }
+
 };
 
-// Inizializza il sistema di cursore appena il DOM è pronto
-document.addEventListener('DOMContentLoaded', () => {
-    CursorManager.init();
-});
+document.addEventListener('DOMContentLoaded', () => CursorManager.init());
