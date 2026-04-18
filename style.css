@@ -2758,6 +2758,8 @@ body.light .wa-field textarea {
 }
 
 @media (max-width: 768px) {
-    #custom-cursor { display: none !important; }
+    /* Su mobile non serve nascondere il cursore di sistema (non esiste) */
     * { cursor: auto !important; }
+    /* Nascosto di default: appare solo al tocco via JS */
+    #custom-cursor { opacity: 0; }
 }
