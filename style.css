@@ -355,17 +355,129 @@ a { color: inherit; text-decoration: none; }
 .corridor__layer--1::before { top: -2px; left: -2px; border-width: 3px 0 0 3px; }
 .corridor__layer--1::after { bottom: -2px; right: -2px; border-width: 0 3px 3px 0; }
 
+/* =========================================
+   PORTE GIGANTI E SBLOCCATE PER IL JS
+========================================= */
 .corridor__door {
   position: absolute;
-  width: 140px;
-  height: 260px;
-  perspective: 800px;
+  /* Dimensioni monumentali */
+  width: 45vw; 
+  max-width: 500px;
+  min-width: 300px;
+  height: 65vh;
+  max-height: 850px;
+  min-height: 450px;
+  perspective: 1200px; /* Aumentato per non distorcere le ante giganti */
+  cursor: grab; /* Cambia il cursore per far capire che si può toccare */
+  z-index: 50;
 }
-.door__frame { width: 100%; height: 100%; border: 3px solid var(--gold-lt); position: relative; transform-style: preserve-3d; box-shadow: 0 0 40px var(--gold-glow); }
-.door__panel { position: absolute; top: 0; width: 50%; height: 100%; background: linear-gradient(180deg, #2a2a2a 0%, #050505 100%); border: 1px solid var(--gold-dk); transform-origin: left; animation: doorOpen 4.5s var(--ease-expo) forwards; animation-delay: 1.5s; }
-.door__panel--right { right: 0; transform-origin: right; animation-name: doorOpen; animation-direction: alternate; transform: perspective(800px) rotateY(85deg); }
-.door__panel--left { left: 0; transform: perspective(800px) rotateY(-85deg); }
-.door__light { position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(255, 245, 184, 0.7) 0%, transparent 80%); animation: lightPulse 4s ease-in-out infinite; animation-delay: 2.5s; mix-blend-mode: screen; }
+
+.corridor__door:active {
+  cursor: grabbing;
+}
+
+.door__frame { 
+  width: 100%; height: 100%; 
+  border: 4px solid var(--gold-lt); 
+  position: relative; 
+  transform-style: preserve-3d; 
+  box-shadow: 0 0 50px var(--gold-glow); 
+  transition: box-shadow 0.3s ease;
+}
+
+.corridor__door:hover .door__frame {
+  box-shadow: 0 0 80px var(--gold-lt); /* Si illumina quando ci passi sopra */
+}
+
+/* =========================================
+   PORTE INTERATTIVE (Proporzioni Reali Corrette)
+========================================= */
+.corridor__door {
+  position: absolute;
+  /* Larghezza ridotta per non accavallarsi ai testi */
+  width: 28vw; 
+  min-width: 260px;
+  max-width: 350px; /* Blocco la larghezza massima */
+  
+  /* Altezza slanciata */
+  height: 65vh;
+  min-height: 450px;
+  max-height: 750px;
+  
+  perspective: 1500px; /* Aumentato per una prospettiva 3D più realistica */
+  cursor: grab; 
+  z-index: 50; /* Lo mantiene cliccabile */
+}
+
+.corridor__door:active {
+  cursor: grabbing;
+}
+
+.door__frame { 
+  width: 100%; height: 100%; 
+  border: 4px solid var(--gold-lt); 
+  position: relative; 
+  transform-style: preserve-3d; 
+  box-shadow: 0 0 50px var(--gold-glow); 
+  transition: box-shadow 0.3s ease;
+}
+
+.corridor__door:hover .door__frame {
+  box-shadow: 0 0 80px var(--gold-lt); 
+}
+
+/* =========================================
+   PANNELLI DELLE ANTE (Texture Fotografiche)
+========================================= */
+.door__panel { 
+  position: absolute; 
+  top: 0; 
+  width: 50%; 
+  height: 100%; 
+  border: 1px solid var(--gold-dk); 
+  
+  /* background-size: cover riempie l'anta senza distorcere/schiacciare la foto */
+  background-size: cover; 
+  background-position: center;
+  background-repeat: no-repeat;
+  
+  animation: none !important; 
+}
+
+/* Texture Anta Sinistra */
+.door__panel--left { 
+  left: 0; 
+  transform-origin: left; 
+  transform: perspective(1200px) rotateY(0deg); 
+  background-image: url('ante/as.jpg'); 
+}
+
+/* Texture Anta Destra */
+.door__panel--right { 
+  right: 0; 
+  transform-origin: right; 
+  transform: perspective(1200px) rotateY(0deg); 
+  background-image: url('ante/ad.jpg'); 
+}
+
+.door__light { 
+  position: absolute; inset: 0; 
+  background: radial-gradient(ellipse at center, rgba(255, 245, 184, 0.8) 0%, transparent 80%); 
+  animation: lightPulse 4s ease-in-out infinite; 
+  mix-blend-mode: screen; 
+  pointer-events: none; 
+}
+
+.door__light { 
+  position: absolute; inset: 0; 
+  background: radial-gradient(ellipse at center, rgba(255, 245, 184, 0.8) 0%, transparent 80%); 
+  animation: lightPulse 4s ease-in-out infinite; 
+  mix-blend-mode: screen; 
+  pointer-events: none; /* Impedisce che la luce blocchi il click sulle ante */
+}
+
+
+
 
 .hero::before {
   content: ''; position: absolute; inset: 0;
@@ -2473,4 +2585,179 @@ body.light #wa-modal {
 body.light .wa-field input,
 body.light .wa-field textarea {
   color: #1a1207;
+}
+
+/* ============================================================
+   MENU A CASCATA (Cascading Dropdown) - OLYMPUS THEME
+   ============================================================ */
+
+/* Livello 1: Il menu a discesa principale sotto "Catalogo" */
+.nav__dropdown--cascading {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px); /* Allineato all'animazione del tuo tema */
+    background: rgba(15, 15, 15, 0.98); /* Stesso sfondo lusso del tuo menu I Lavori */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    min-width: 260px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+    display: none;
+    flex-direction: column;
+    padding: 10px 0;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+/* Attivazione Livello 1 */
+.nav__item--has-dropdown:hover > .nav__dropdown--cascading {
+    display: flex;
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Livelli 2+: I sottomenu che escono lateralmente */
+.nav__dropdown--cascading .dropdown-menu {
+    position: absolute;
+    top: -10px;
+    left: 100%;
+    background: rgba(20, 20, 22, 0.98); /* Leggermente diverso per dare profondità 3D */
+    border: 1px solid var(--border);
+    min-width: 250px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+    display: none;
+    flex-direction: column;
+    padding: 10px 0;
+    backdrop-filter: blur(10px);
+}
+
+.dropdown-item {
+    position: relative;
+    list-style: none;
+}
+
+/* Voci del menu */
+.dropdown-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    color: var(--white);
+    text-decoration: none;
+    font-family: var(--ff-body);
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    transition: 0.3s ease;
+}
+
+/* Effetto Hover (Usa il tuo Oro) */
+.dropdown-link:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--gold);
+}
+
+/* Attivazione Sottomenu Laterali */
+.dropdown-item.has-submenu:hover > .dropdown-menu {
+    display: flex;
+}
+
+/* Freccia indicatrice per i sottomenu */
+.submenu-indicator {
+    font-size: 1.2rem;
+    color: var(--gold-dk);
+    line-height: 1;
+}
+
+/* Separatore prima dei PDF */
+.dropdown-separator {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 10px 0;
+}
+
+/* Bottoni PDF Statici */
+.static-pdf-item .dropdown-link {
+    color: var(--gold-lt);
+    font-weight: 600;
+}
+
+.static-pdf-item .dropdown-link:hover {
+    color: var(--black);
+    background: var(--gold);
+}
+
+
+/* ── CURSOR (SCINTILLA DIVINA V3 - ZERO LAG) ─────────────────────────── */
+* { cursor: none !important; }
+
+#custom-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 999999;
+    will-change: transform;   /* GPU compositing, nessun layout */
+    /* NESSUNA transition qui: il movimento è 1:1 con il mouse */
+}
+
+.cursor-wrapper {
+    position: relative;
+    transition: transform 0.18s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.cursor-icon {
+    position: absolute;
+    transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* ── STATO DEFAULT: + dorato ── */
+.icon-plus {
+    filter: drop-shadow(0 0 10px var(--gold-glow));
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    opacity: 1;
+}
+
+/* ── STATO DEFAULT: mano nascosta ── */
+.icon-hand {
+    /* offset: punta del dito (7*1.58≈11px, 2*1.58≈3px) allineata al cursore */
+    transform: translate(-11px, -3px) scale(0.25) translateY(20px);
+    opacity: 0;
+}
+
+/* ── HOVER: mano visibile ── */
+#custom-cursor.is-hovering .icon-plus {
+    transform: translate(-50%, -50%) scale(0) rotate(180deg);
+    opacity: 0;
+}
+#custom-cursor.is-hovering .icon-hand {
+    transform: translate(-11px, -3px) scale(1) translateY(0);
+    opacity: 1;
+    animation: cursorLightning 2.2s infinite alternate;
+}
+
+/* ── CLICK ── */
+#custom-cursor.is-clicking .cursor-wrapper {
+    transform: scale(0.72);
+}
+
+/* ── ENTRATA/USCITA FINESTRA ── */
+#custom-cursor { transition: opacity 0.15s ease; }
+
+/* ── FULMINI ── */
+@keyframes cursorLightning {
+    0%,35%  { filter: drop-shadow(0 0 5px var(--gold-glow)); }
+    40%     { filter: drop-shadow(0 0 18px var(--lightning)) drop-shadow(0 0 28px var(--gold-lt)); }
+    45%     { filter: drop-shadow(0 0 5px var(--gold-glow)); }
+    52%     { filter: drop-shadow(0 0 24px var(--lightning)) drop-shadow(0 0 38px var(--gold-lt)); }
+    57%     { filter: drop-shadow(0 0 5px var(--gold-glow)); }
+    100%    { filter: drop-shadow(0 0 5px var(--gold-glow)); }
+}
+
+@media (max-width: 768px) {
+    #custom-cursor { display: none !important; }
+    * { cursor: auto !important; }
 }
