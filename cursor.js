@@ -1,62 +1,69 @@
 const CursorManager = {
     init() {
-        const dot = document.getElementById('cursorDot');
-        const ring = document.getElementById('cursorRing');
+        const cursor = document.getElementById('custom-cursor');
         
-        // Se gli elementi non esistono nella pagina, fermiamo lo script per evitare errori
-        if (!dot || !ring) return;
+        // Sicurezza: se per qualche motivo manca il div nell'HTML, lo script non crasha
+        if (!cursor) {
+            console.warn("CursorManager: Elemento #custom-cursor non trovato nel DOM.");
+            return;
+        }
 
-        let ringX = 0, ringY = 0;
-        let dotX = 0, dotY = 0;
-        let raf;
-
-        // Traccia la posizione reale del mouse
+        // 1. TRACCIAMENTO ISTANTANEO (Zero Lag, rapporto 1:1)
+        // Usiamo translate3d per sfruttare l'accelerazione hardware della GPU
         document.addEventListener('mousemove', (e) => {
-            dotX = e.clientX;
-            dotY = e.clientY;
+            cursor.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
         });
 
-        // Loop di animazione per il ritardo dell'anello (lerp)
-        function animateCursor() {
-            ringX += (dotX - ringX) * 0.14; // Il valore 0.14 gestisce la "lentezza" dell'anello
-            ringY += (dotY - ringY) * 0.14;
-
-            dot.style.left = dotX + 'px';
-            dot.style.top = dotY + 'px';
-            ring.style.left = ringX + 'px';
-            ring.style.top = ringY + 'px';
-
-            raf = requestAnimationFrame(animateCursor);
-        }
-        animateCursor();
-
-        // Elementi interattivi che faranno reagire il cursore
-        const interactables = 'a, button, .product-card, .service-item, .about-card, .t-btn, input, textarea, select, .modal-img-container, .modal-close';
+        // 2. GESTIONE HOVER (Tutte le tue classi interattive del tema Olympus)
+        // Ho incluso bottoni d'oro, link della nav, input, porte 3D e icone di WhatsApp
+        const interactables = `
+            a, button, input, textarea, select, 
+            .hero__cta, .gold-btn, .special-btn, 
+            .nav__link, .nav__dropdown-btn, .dropdown-link,
+            .corridor__door, .collection-card, .work-item, 
+            .stat-card, .lightbox__btn, .lightbox__close, 
+            .lightbox__back-btn, .sidebar-card, .lightbox__subcard,
+            #wa-fab, #wa-submit
+        `;
         
         document.addEventListener('mouseover', (e) => {
+            // Verifica se il cursore è entrato in uno degli elementi interattivi o nei loro figli
             if (e.target.closest(interactables)) {
-                ring.classList.add('hovering');
+                cursor.classList.add('is-hovering');
             }
         });
         
         document.addEventListener('mouseout', (e) => {
+            // Verifica se il cursore è uscito dall'elemento interattivo
             if (e.target.closest(interactables)) {
-                ring.classList.remove('hovering');
+                cursor.classList.remove('is-hovering');
             }
         });
 
-        // Animazioni al click del mouse
+        // 3. GESTIONE CLICK E RIDIMENSIONAMENTO
         document.addEventListener('mousedown', () => {
-            dot.style.transform = 'translate(-50%, -50%) scale(1.8)';
-            ring.style.transform = 'translate(-50%, -50%) scale(0.8)';
+            cursor.classList.add('is-clicking');
         });
         
         document.addEventListener('mouseup', () => {
-            dot.style.transform = 'translate(-50%, -50%) scale(1)';
-            ring.style.transform = 'translate(-50%, -50%) scale(1)';
+            cursor.classList.remove('is-clicking');
+        });
+        
+        // Fallback: se l'utente clicca e trascina il mouse fuori dalla finestra del browser
+        document.addEventListener('mouseleave', () => {
+            cursor.classList.remove('is-clicking');
+            // Nascondiamo il cursore personalizzato se usciamo dalla finestra
+            cursor.style.opacity = '0';
+        });
+
+        document.addEventListener('mouseenter', () => {
+            // Riappare appena il mouse rientra nella finestra
+            cursor.style.opacity = '1';
         });
     }
 };
 
-// Se nel tuo progetto inizializzavi il cursore chiamando CursorManager.init(), 
-// ricordati di assicurarti che venga chiamato! (es. al DOMContentLoaded)
+// Inizializza il sistema di cursore appena il DOM è pronto
+document.addEventListener('DOMContentLoaded', () => {
+    CursorManager.init();
+});
