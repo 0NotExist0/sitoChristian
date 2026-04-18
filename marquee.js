@@ -1,5 +1,5 @@
 /* ============================================================
-   MARQUEE ENGINE — SISTEMA OLYMPUS (VERSIONE UNIVERSALE)
+   MARQUEE ENGINE — PORTA NOVA (INTEGRAZIONE DATA ENGINE)
    ============================================================ */
 
 class InfiniteMarquee {
@@ -13,7 +13,7 @@ class InfiniteMarquee {
     }
 
     /**
-     * Trasforma i link Drive per renderli visibili nei tag <img>
+     * Trasforma i link Drive per renderli visibili (Necessario per i tag IMG)
      */
     formatDriveUrl(url) {
         if (!url || typeof url !== 'string') return '';
@@ -21,41 +21,17 @@ class InfiniteMarquee {
         if (url.includes('/file/d/')) {
             id = url.split('/file/d/')[1].split('/')[0];
         } else if (url.includes('id=')) {
-            const match = url.match(/id=([^&]+)/);
-            id = match ? match[1] : '';
+            const params = new URLSearchParams(url.split('?')[1]);
+            id = params.get('id');
         }
         return id ? `https://drive.google.com/uc?export=view&id=${id}` : url;
     }
 
     /**
-     * SCANSIONE TOTALE: Cerca ogni immagine presente nel JSON
-     * ignorando la struttura delle cartelle (trova tutto!)
+     * Funzione per mescolare l'array (Random)
      */
-    findAllImages(obj) {
-        let results = [];
-        if (!obj) return results;
-
-        const isImage = (str) => typeof str === 'string' && /\.(jpg|jpeg|png|webp)$/i.test(str);
-
-        const search = (current) => {
-            if (typeof current === 'string') {
-                if (isImage(current)) results.push(current);
-            } else if (Array.isArray(current)) {
-                current.forEach(item => search(item));
-            } else if (typeof current === 'object') {
-                for (let key in current) {
-                    // Prende il valore se è un URL immagine, o continua a scavare
-                    if ((key === 'url' || key === 'link') && isImage(current[key])) {
-                        results.push(current[key]);
-                    } else {
-                        search(current[key]);
-                    }
-                }
-            }
-        };
-
-        search(obj);
-        return results;
+    shuffle(array) {
+        return array.sort(() => Math.random() - 0.5);
     }
 
     nextImageTag() {
@@ -64,6 +40,7 @@ class InfiniteMarquee {
         const item = this.images[this.imgIndex % this.images.length];
         this.imgIndex++;
 
+        // Usiamo la formattazione Drive per essere sicuri che si veda
         const finalSrc = this.formatDriveUrl(item);
 
         return `<img
@@ -86,49 +63,69 @@ class InfiniteMarquee {
         `;
     }
 
-    buildMarquee() {
+    build() {
         if (this.images.length === 0) return;
         
         this.track.innerHTML = '';
         this.imgIndex = 0;
 
-        // Mescoliamo le foto caricate
-        this.images = this.images.sort(() => Math.random() - 0.5);
+        // Creiamo il contenuto (abbastanza lungo da coprire lo scorrimento)
+        let contentHtml = '';
+        for (let i = 0; i < 10; i++) {
+            contentHtml += this.createSegment();
+        }
 
-        let totalHtml = '';
-        for (let i = 0; i < 8; i++) totalHtml += this.createSegment();
-        
-        const container = document.createElement('div');
-        container.className = 'marquee-content';
-        container.innerHTML = totalHtml;
-        
-        this.track.appendChild(container);
-        this.track.appendChild(container.cloneNode(true));
+        const blockA = document.createElement('div');
+        blockA.className = 'marquee-content';
+        blockA.innerHTML = contentHtml;
+
+        const blockB = blockA.cloneNode(true);
+        blockB.setAttribute('aria-hidden', 'true');
+
+        this.track.appendChild(blockA);
+        this.track.appendChild(blockB);
     }
 
     init() {
-        // Aspetta che i dati siano pronti
-        if (!window.galleryData) {
-            setTimeout(() => this.init(), 1000);
+        // 1. Aspettiamo che window.galleryData e DataEngine siano pronti
+        if (!window.galleryData || typeof DataEngine === 'undefined') {
+            setTimeout(() => this.init(), 500);
             return;
         }
 
-        console.log("Marquee: Avvio scansione automatica...");
-        
-        // Cerca TUTTE le immagini in window.galleryData
-        this.images = this.findAllImages(window.galleryData);
-        
-        console.log("Marquee: Trovate " + this.images.length + " immagini.");
+        // 2. Usiamo il TUO DataEngine per trovare le cartelle esatte
+        // Nomi presi dal tuo CatalogSchema:
+        const foldersToSearch = [
+            'Rivestimenti in alluminio + inseriti', 
+            'Rivestimenti in Legno',
+            'Pannelli in alluminio'
+        ];
 
-        if (this.images.length > 0) {
-            this.buildMarquee();
+        let collectedImages = [];
+
+        foldersToSearch.forEach(folderName => {
+            const folderData = DataEngine.findFolder(window.galleryData, folderName);
+            if (folderData) {
+                // Usiamo la TUA funzione extractImages che funziona sicuramente
+                const imgs = DataEngine.extractImages(folderData);
+                collectedImages = collectedImages.concat(imgs);
+            }
+        });
+
+        // 3. Se non ha trovato nulla con quei nomi, prende tutto come backup
+        if (collectedImages.length === 0) {
+            collectedImages = DataEngine.extractImages(window.galleryData);
         }
+
+        // 4. Mescoliamo a caso e costruiamo
+        this.images = this.shuffle(collectedImages);
+        this.build();
     }
 }
 
-// Avvio
+// Avvio dopo un piccolo delay per dare tempo al CatalogManager di caricare
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
         new InfiniteMarquee('dynamicMarquee');
-    }, 500);
+    }, 1000);
 });
