@@ -1,5 +1,5 @@
 /* ============================================================
-   MARQUEE ENGINE — SISTEMA OLYMPUS (VERSIONE DRIVE-READY)
+   MARQUEE ENGINE — SISTEMA OLYMPUS (VERSIONE BLINDATA)
    ============================================================ */
 
 class InfiniteMarquee {
@@ -16,52 +16,52 @@ class InfiniteMarquee {
     }
 
     /**
-     * Trasforma i link Drive standard in link diretti per i tag IMG
+     * Convertitore universale per Google Drive
      */
     formatDriveUrl(url) {
         if (!url || typeof url !== 'string') return '';
-        if (url.includes('drive.google.com') && (url.includes('/file/d/') || url.includes('id='))) {
-            let id = '';
-            if (url.includes('/file/d/')) {
-                id = url.split('/file/d/')[1].split('/')[0];
-            } else {
-                const urlParams = new URLSearchParams(url.split('?')[1]);
-                id = urlParams.get('id');
-            }
-            return `https://drive.google.com/uc?export=view&id=${id}`;
+        
+        // Se è già un link diretto o un placeholder, non toccarlo
+        if (url.includes('googleusercontent.com') || url.includes('unsplash')) return url;
+
+        // Estrazione ID per link tipo /file/d/ID/... o ?id=ID
+        let id = '';
+        if (url.includes('/file/d/')) {
+            id = url.split('/file/d/')[1].split('/')[0].split('?')[0];
+        } else if (url.includes('id=')) {
+            const parts = url.split('id=')[1];
+            id = parts.split('&')[0];
         }
+
+        if (id) {
+            // Formato più affidabile per il rendering diretto
+            return `https://lh3.googleusercontent.com/d/${id}`;
+        }
+        
         return url;
     }
 
-    /**
-     * Estrae l'URL pulito dall'item (che sia stringa o oggetto)
-     */
     nextImageTag() {
-        if (this.images.length === 0) return '';
-
-        const item = this.images[this.imgIndex % this.images.length];
-        this.imgIndex++;
-
-        let rawUrl = "";
-        if (typeof item === 'string') {
-            rawUrl = item;
-        } else if (item && typeof item === 'object') {
-            rawUrl = item.url || item.src || item.link || "";
+        // Se non ci sono immagini, usiamo un placeholder elegante invece di sparire
+        const placeholder = "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=300&auto=format&fit=crop";
+        
+        let rawUrl = placeholder;
+        if (this.images.length > 0) {
+            const item = this.images[this.imgIndex % this.images.length];
+            rawUrl = (typeof item === 'string') ? item : (item.url || item.src || placeholder);
+            this.imgIndex++;
         }
 
         const finalSrc = this.formatDriveUrl(rawUrl);
 
-        if (!finalSrc || finalSrc.includes('[object')) {
-            return `<span style="display:none"></span>`;
-        }
-
+        // NOTA: Ho rimosso display='none' così i riquadri NON spariscono più
         return `<img
             src="${finalSrc}"
             class="marquee-img"
             loading="lazy"
-            alt="Porta Nova Design"
+            alt="Porta Nova"
             draggable="false"
-            onerror="this.style.display='none'; this.parentElement.querySelectorAll('.sep').forEach(s => s.style.display='none')"
+            onerror="this.src='${placeholder}'; this.classList.add('broken-img');"
         >`;
     }
 
@@ -82,13 +82,12 @@ class InfiniteMarquee {
         probe.style.cssText = `visibility:hidden; position:absolute; top:-9999px; display:inline-flex; align-items:center; white-space:nowrap;`;
         probe.innerHTML = this.createSegment();
         document.body.appendChild(probe);
-        const w = probe.scrollWidth || 600;
+        const w = probe.scrollWidth || 800;
         document.body.removeChild(probe);
         return w;
     }
 
     buildMarquee() {
-        if (this.images.length === 0) return;
         this.track.innerHTML = '';
         this.imgIndex = 0;
 
@@ -114,38 +113,27 @@ class InfiniteMarquee {
             clearTimeout(this.resizeTimer);
             this.resizeTimer = setTimeout(() => this.buildMarquee(), 250);
         });
-
-        document.addEventListener('visibilitychange', () => {
-            this.track.style.animationPlayState = document.hidden ? 'paused' : 'running';
-        });
     }
 
     init() {
-        // Aspetta che i dati di Drive siano caricati dal CatalogManager
-        if (!window.galleryData || Object.keys(window.galleryData).length === 0) {
-            setTimeout(() => this.init(), 200);
+        // Controllo se i dati esistono, altrimenti riprova
+        if (!window.galleryData) {
+            setTimeout(() => this.init(), 500);
             return;
         }
 
-        let dataNode = window.galleryData;
-        
-        // Se è stata specificata una cartella (es. 'Lisce'), cercala
-        if (this.targetFolder && typeof DataEngine !== 'undefined') {
-            const found = DataEngine.findFolder(window.galleryData, this.targetFolder);
-            if (found) dataNode = found;
-        }
-
-        // Estrazione immagini tramite il tuo DataEngine esistente
+        // Estrazione immagini
         if (typeof DataEngine !== 'undefined') {
+            let dataNode = window.galleryData;
+            if (this.targetFolder) {
+                const found = DataEngine.findFolder(window.galleryData, this.targetFolder);
+                if (found) dataNode = found;
+            }
             this.images = DataEngine.extractImages(dataNode);
         }
 
-        // Fallback se Drive è vuoto
-        if (this.images.length === 0) {
-            console.warn("Marquee: Nessuna immagine trovata in window.galleryData");
-            this.images = ["https://images.unsplash.com/photo-1615873968403-89e068629275?q=80&w=600&auto=format&fit=crop"];
-        }
-
+        console.log("Marquee caricato con", this.images.length, "immagini.");
+        
         this.buildMarquee();
         this.addEventListeners();
     }
@@ -154,142 +142,6 @@ class InfiniteMarquee {
 /* ── Avvio ── */
 document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('dynamicMarquee')) {
-        // null = usa tutto il catalogo. Inserisci 'Lisce' o 'Rivestimenti in Legno' per filtrare.
-        new InfiniteMarquee('dynamicMarquee', null);
-    }
-});/* ============================================================
-   MARQUEE ENGINE — SISTEMA OLYMPUS (INTEGRATO CON DRIVE)
-   ============================================================ */
-
-class InfiniteMarquee {
-    constructor(trackId, targetFolder = null) {
-        this.track = document.getElementById(trackId);
-        if (!this.track) return;
-
-        this.resizeTimer = null;
-        this.imgIndex    = 0;
-        this.images      = []; // Verrà popolato da Drive
-        this.targetFolder = targetFolder; // Nome cartella opzionale
-
-        this.init();
-    }
-
-    /* ── Immagine dal Drive con gestione errore ── */
-    nextImageTag() {
-        const src = this.images[this.imgIndex % this.images.length];
-        this.imgIndex++;
-
-        return `<img
-            src="${src}"
-            class="marquee-img"
-            loading="lazy"
-            alt="Porta Nova Design"
-            draggable="false"
-            onerror="this.style.display='none'"
-        >`;
-    }
-
-    /* ── Un segmento di contenuto ── */
-    createSegment() {
-        return `
-            <span>MADE IN ITALY</span><span class="sep">◈</span>
-            ${this.nextImageTag()}<span class="sep">◈</span>
-            <span>DESIGN ESCLUSIVO</span><span class="sep">◈</span>
-            ${this.nextImageTag()}<span class="sep">◈</span>
-            <span>RIVESTIMENTO</span><span class="sep">◈</span>
-            ${this.nextImageTag()}<span class="sep">◈</span>
-        `;
-    }
-
-    /* ── Misura la larghezza di un segmento ── */
-    measureSegmentWidth() {
-        const probe = document.createElement('div');
-        probe.className   = 'marquee-content';
-        probe.style.cssText = `
-            visibility: hidden;
-            position:   absolute;
-            top:        -9999px;
-            left:       0;
-            display:    inline-flex;
-            align-items: center;
-            white-space: nowrap;
-        `;
-        probe.innerHTML = this.createSegment();
-        document.body.appendChild(probe);
-        const w = probe.scrollWidth || 600;
-        document.body.removeChild(probe);
-        return w;
-    }
-
-    /* ── Costruisce il marquee ── */
-    buildMarquee() {
-        this.track.innerHTML = '';
-        this.imgIndex = 0;
-
-        const segmentWidth = this.measureSegmentWidth();
-        const copies = Math.ceil((window.innerWidth * 2) / segmentWidth) + 3;
-
-        let html = '';
-        for (let i = 0; i < copies; i++) html += this.createSegment();
-
-        /* Blocco A */
-        const blockA = document.createElement('div');
-        blockA.className = 'marquee-content';
-        blockA.innerHTML = html;
-
-        /* Blocco B — clone identico per il loop seamless -50% */
-        const blockB = blockA.cloneNode(true);
-        blockB.setAttribute('aria-hidden', 'true');
-
-        this.track.appendChild(blockA);
-        this.track.appendChild(blockB);
-    }
-
-    /* ── Event listeners ── */
-    addEventListeners() {
-        window.addEventListener('resize', () => {
-            clearTimeout(this.resizeTimer);
-            this.resizeTimer = setTimeout(() => this.buildMarquee(), 250);
-        });
-
-        document.addEventListener('visibilitychange', () => {
-            this.track.style.animationPlayState =
-                document.hidden ? 'paused' : 'running';
-        });
-    }
-
-    /* ── Inizializzazione asincrona con Drive ── */
-    init() {
-        // Se window.galleryData non è ancora pronto, riprova tra poco
-        if (!window.galleryData) {
-            setTimeout(() => this.init(), 100);
-            return;
-        }
-
-        // Estrazione delle immagini tramite il DataEngine
-        let dataNode = window.galleryData;
-        if (this.targetFolder) {
-            const foundData = DataEngine.findFolder(window.galleryData, this.targetFolder);
-            if (foundData) dataNode = foundData;
-        }
-
-        this.images = DataEngine.extractImages(dataNode);
-
-        // Fallback di sicurezza se non ci sono immagini nella cartella
-        if (this.images.length === 0) {
-            this.images = ["https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=600&auto=format&fit=crop"];
-        }
-
-        this.buildMarquee();
-        this.addEventListeners();
-    }
-}
-
-/* ── Avvio ── */
-document.addEventListener('DOMContentLoaded', () => {
-    if (document.getElementById('dynamicMarquee')) {
-        // Puoi passare null per usare tutte le immagini del Drive,
-        // oppure una stringa (es. 'Rivestimenti in Legno') per una specifica cartella.
-        new InfiniteMarquee('dynamicMarquee', null); 
+        new InfiniteMarquee('dynamicMarquee');
     }
 });
