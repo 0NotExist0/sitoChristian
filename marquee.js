@@ -1,67 +1,62 @@
 /* ============================================================
-   MARQUEE ENGINE — SISTEMA OLYMPUS (VERSIONE DRIVE-READY)
+   MARQUEE ENGINE — SISTEMA OLYMPUS (VERSIONE DRIVE-RANDOM)
    ============================================================ */
 
 class InfiniteMarquee {
-    constructor(trackId, targetFolder = null) {
+    constructor(trackId) {
         this.track = document.getElementById(trackId);
         if (!this.track) return;
 
-        this.resizeTimer = null;
-        this.imgIndex    = 0;
-        this.images      = [];
-        this.targetFolder = targetFolder;
-
+        this.imgIndex = 0;
+        this.images   = [];
         this.init();
     }
 
     /**
-     * Trasforma i link Drive standard in link diretti per i tag IMG
+     * Converte i link di Google Drive in formati leggibili dal browser
      */
     formatDriveUrl(url) {
         if (!url || typeof url !== 'string') return '';
-        if (url.includes('drive.google.com') && (url.includes('/file/d/') || url.includes('id='))) {
-            let id = '';
-            if (url.includes('/file/d/')) {
-                id = url.split('/file/d/')[1].split('/')[0];
-            } else {
-                const urlParams = new URLSearchParams(url.split('?')[1]);
-                id = urlParams.get('id');
-            }
-            return `https://drive.google.com/uc?export=view&id=${id}`;
+        let id = '';
+        if (url.includes('/file/d/')) {
+            id = url.split('/file/d/')[1].split('/')[0].split('?')[0];
+        } else if (url.includes('id=')) {
+            id = new URLSearchParams(url.split('?')[1]).get('id');
         }
-        return url;
+        return id ? `https://drive.google.com/uc?export=view&id=${id}` : url;
     }
 
     /**
-     * Estrae l'URL pulito dall'item (che sia stringa o oggetto)
+     * Mescola l'array delle immagini in modo casuale
      */
+    shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
     nextImageTag() {
-        if (this.images.length === 0) return '';
+        // Se non ci sono immagini, usiamo un placeholder di design
+        const placeholder = "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=300&auto=format&fit=crop";
+        
+        if (this.images.length === 0) {
+            return `<img src="${placeholder}" class="marquee-img">`;
+        }
 
         const item = this.images[this.imgIndex % this.images.length];
         this.imgIndex++;
 
-        let rawUrl = "";
-        if (typeof item === 'string') {
-            rawUrl = item;
-        } else if (item && typeof item === 'object') {
-            rawUrl = item.url || item.src || item.link || "";
-        }
-
+        const rawUrl = (typeof item === 'string') ? item : (item.url || item.src || "");
         const finalSrc = this.formatDriveUrl(rawUrl);
-
-        if (!finalSrc || finalSrc.includes('[object')) {
-            return `<span style="display:none"></span>`;
-        }
 
         return `<img
             src="${finalSrc}"
             class="marquee-img"
             loading="lazy"
-            alt="Porta Nova Design"
-            draggable="false"
-            onerror="this.style.display='none'; this.parentElement.querySelectorAll('.sep').forEach(s => s.style.display='none')"
+            alt="Porta Nova"
+            onerror="this.src='${placeholder}';"
         >`;
     }
 
@@ -76,85 +71,62 @@ class InfiniteMarquee {
         `;
     }
 
-    measureSegmentWidth() {
-        const probe = document.createElement('div');
-        probe.className = 'marquee-content';
-        probe.style.cssText = `visibility:hidden; position:absolute; top:-9999px; display:inline-flex; align-items:center; white-space:nowrap;`;
-        probe.innerHTML = this.createSegment();
-        document.body.appendChild(probe);
-        const w = probe.scrollWidth || 600;
-        document.body.removeChild(probe);
-        return w;
-    }
-
     buildMarquee() {
-        if (this.images.length === 0) return;
         this.track.innerHTML = '';
         this.imgIndex = 0;
 
-        const segmentWidth = this.measureSegmentWidth();
-        const copies = Math.ceil((window.innerWidth * 2) / segmentWidth) + 3;
+        // Creiamo abbastanza copie per coprire lo schermo
+        const segmentHtml = this.createSegment();
+        const container = document.createElement('div');
+        container.className = 'marquee-content';
+        
+        // Generiamo circa 10 ripetizioni per sicurezza
+        let totalHtml = '';
+        for (let i = 0; i < 10; i++) totalHtml += segmentHtml;
+        
+        container.innerHTML = totalHtml;
+        const blockB = container.cloneNode(true);
 
-        let html = '';
-        for (let i = 0; i < copies; i++) html += this.createSegment();
-
-        const blockA = document.createElement('div');
-        blockA.className = 'marquee-content';
-        blockA.innerHTML = html;
-
-        const blockB = blockA.cloneNode(true);
-        blockB.setAttribute('aria-hidden', 'true');
-
-        this.track.appendChild(blockA);
+        this.track.appendChild(container);
         this.track.appendChild(blockB);
     }
 
-    addEventListeners() {
-        window.addEventListener('resize', () => {
-            clearTimeout(this.resizeTimer);
-            this.resizeTimer = setTimeout(() => this.buildMarquee(), 250);
-        });
-
-        document.addEventListener('visibilitychange', () => {
-            this.track.style.animationPlayState = document.hidden ? 'paused' : 'running';
-        });
-    }
-
     init() {
-        // Aspetta che i dati di Drive siano caricati dal CatalogManager
-        if (!window.galleryData || Object.keys(window.galleryData).length === 0) {
-            setTimeout(() => this.init(), 200);
+        // 1. Attendi che i dati siano pronti
+        if (!window.galleryData || typeof DataEngine === 'undefined') {
+            setTimeout(() => this.init(), 500);
             return;
         }
 
-        let dataNode = window.galleryData;
-        
-        // Se è stata specificata una cartella (es. 'Lisce'), cercala
-        if (this.targetFolder && typeof DataEngine !== 'undefined') {
-            const found = DataEngine.findFolder(window.galleryData, this.targetFolder);
-            if (found) dataNode = found;
-        }
+        console.log("Marquee: Analizzo cartelle per immagini...");
 
-        // Estrazione immagini tramite il tuo DataEngine esistente
-        if (typeof DataEngine !== 'undefined') {
-            this.images = DataEngine.extractImages(dataNode);
-        }
+        // 2. Cerchiamo le cartelle specifiche nel tuo catalogo
+        const folderNames = ["Rivestimenti in alluminio", "Rivestimenti in Legno"];
+        let combinedImages = [];
 
-        // Fallback se Drive è vuoto
+        folderNames.forEach(name => {
+            const folder = DataEngine.findFolder(window.galleryData, name);
+            if (folder) {
+                const imgs = DataEngine.extractImages(folder);
+                combinedImages = combinedImages.concat(imgs);
+                console.log(`Trovate ${imgs.length} immagini in: ${name}`);
+            }
+        });
+
+        // 3. Mescoliamo a caso
+        this.images = this.shuffle(combinedImages);
+
+        // 4. Se non troviamo nulla, prendiamo tutto il catalogo come fallback
         if (this.images.length === 0) {
-            console.warn("Marquee: Nessuna immagine trovata in window.galleryData");
-            this.images = ["https://images.unsplash.com/photo-1615873968403-89e068629275?q=80&w=600&auto=format&fit=crop"];
+            console.warn("Cartelle specifiche non trovate, uso catalogo intero.");
+            this.images = this.shuffle(DataEngine.extractImages(window.galleryData));
         }
 
         this.buildMarquee();
-        this.addEventListeners();
     }
 }
 
-/* ── Avvio ── */
+/* Avvio automatico */
 document.addEventListener('DOMContentLoaded', () => {
-    if (document.getElementById('dynamicMarquee')) {
-        // null = usa tutto il catalogo. Inserisci 'Lisce' o 'Rivestimenti in Legno' per filtrare.
-        new InfiniteMarquee('dynamicMarquee', null);
-    }
+    new InfiniteMarquee('dynamicMarquee');
 });
