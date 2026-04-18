@@ -2763,3 +2763,57 @@ body.light .wa-field textarea {
     /* Nascosto di default: appare solo al tocco via JS */
     #custom-cursor { opacity: 0; }
 }
+
+/* ── Marquee track ── */
+.marquee-track {
+    display: flex;
+    overflow: hidden;
+    white-space: nowrap;
+    align-items: center;
+    height: 48px;          /* altezza della barra */
+}
+
+.marquee-content {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    animation: marquee-scroll 30s linear infinite;
+    will-change: transform;
+}
+
+.marquee-content[aria-hidden="true"] {
+    animation-delay: -15s; /* metà del tempo → loop perfetto */
+}
+
+/* ── QUESTO È IL FIX PRINCIPALE ── */
+.marquee-img {
+    height: 36px;          /* altezza fissa proporzionata alla barra */
+    width: auto;           /* larghezza automatica mantiene le proporzioni */
+    object-fit: cover;
+    border-radius: 3px;
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;        /* impedisce la compressione nel flex */
+}
+
+/* Separatori e testi */
+.marquee-content span {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 18px;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: #c9a84c;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.marquee-content .sep {
+    padding: 0 8px;
+    opacity: 0.5;
+}
+
+@keyframes marquee-scroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}
