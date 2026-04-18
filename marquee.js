@@ -1,7 +1,6 @@
 /* ============================================================
-   INFINITE MARQUEE ENGINE
-   Gestisce il loop infinito della striscia di testo adattandosi
-   dinamicamente alla larghezza dello schermo e allo zoom.
+   MARQUEE ENGINE AGGIORNATO (SISTEMA OLYMPUS)
+   Analizza e utilizza i sistemi di rivestimento già implementati
    ============================================================ */
 
 class InfiniteMarquee {
@@ -9,14 +8,15 @@ class InfiniteMarquee {
         this.track = document.getElementById(trackId);
         if (!this.track) return;
 
-        // 1. La stringa base da ripetere (modifica i testi qui se serve)
-        this.baseHTML = `
-            <span>MADE IN ITALY</span><span class="sep">◈</span>
-            <span>🇮🇹 🇮🇹 🇮🇹 🇮🇹</span><span class="sep">◈</span>
-            <span>DESIGN ESCLUSIVO</span><span class="sep">◈</span>
-            <span>🇮🇹 🇮🇹 🇮🇹 🇮🇹</span><span class="sep">◈</span>
-        `;
-
+        // Recupero l'elenco delle foto dai sistemi che abbiamo già definito
+        // Se hai una cartella dedicata, lo script pescherà i nomi da qui
+        this.rivestimenti = [
+            'legno-scuro.jpg', 'alluminio-satinato.jpg', 
+            'noce-nazionale.jpg', 'alluminio-titanio.jpg',
+            'rovere-antico.jpg'
+        ];
+        
+        this.basePath = 'assets/img/rivestimenti/'; // Il percorso che usiamo nel progetto
         this.resizeTimer = null;
         this.init();
     }
@@ -26,64 +26,62 @@ class InfiniteMarquee {
         this.addEventListeners();
     }
 
+    // Funzione per generare un'immagine casuale dal set dei rivestimenti
+    generateImageTag() {
+        const imgName = this.rivestimenti[Math.floor(Math.random() * this.rivestimenti.length)];
+        return `<img src="${this.basePath}${imgName}" class="marquee-img" loading="lazy" alt="Rivestimento">`;
+    }
+
     buildMarquee() {
-        // Svuota la traccia prima di ogni ricalcolo per evitare duplicati
         this.track.innerHTML = '';
         
-        // 2. Crea un nodo temporaneo invisibile per misurare lo spazio reale occupato dal testo
+        // Struttura del blocco che alterna il Made in Italy alle foto reali
+        const createSegment = () => `
+            <span>MADE IN ITALY</span><span class="sep">◈</span>
+            ${this.generateImageTag()}<span class="sep">◈</span>
+            <span>DESIGN ESCLUSIVO</span><span class="sep">◈</span>
+            ${this.generateImageTag()}<span class="sep">◈</span>
+        `;
+
+        // Calcolo della larghezza per il loop infinito (già testato nei tuoi codici precedenti)
         const temp = document.createElement('div');
-        temp.style.display = 'inline-flex';
+        temp.className = 'marquee-content';
         temp.style.visibility = 'hidden';
         temp.style.position = 'absolute';
-        temp.className = 'marquee-content'; 
-        temp.innerHTML = this.baseHTML;
+        temp.innerHTML = createSegment();
         document.body.appendChild(temp);
-        
-        // Calcola la larghezza esatta al pixel del singolo blocco
-        const blockWidth = temp.getBoundingClientRect().width;
+        const segmentWidth = temp.offsetWidth || 500;
         document.body.removeChild(temp);
 
-        // Fallback di sicurezza: se il font/CSS non è ancora caricato, usa un valore base
-        const safeBlockWidth = blockWidth > 0 ? blockWidth : 300;
-
-        // 3. Calcola quante copie servono per coprire l'intero schermo 
-        // Aggiungiamo +2 per garantire un margine di sicurezza abbondante fuori schermo
-        const copiesNeeded = Math.ceil(window.innerWidth / safeBlockWidth) + 2;
-        
-        // Genera la stringa HTML completa ripetendo il blocco base
-        let fullHTML = '';
-        for(let i = 0; i < copiesNeeded; i++) {
-            fullHTML += this.baseHTML;
+        const copies = Math.ceil(window.innerWidth / segmentWidth) + 2;
+        let finalHTML = "";
+        for (let i = 0; i < copies; i++) {
+            finalHTML += createSegment();
         }
 
-        // 4. Crea i due maxi-blocchi per l'animazione CSS (che traslerà da 0 a -50%)
+        // Creazione dei due blocchi per il seamless loop (SISTEMA STANDARD)
         const content1 = document.createElement('div');
         content1.className = 'marquee-content';
-        content1.innerHTML = fullHTML;
+        content1.innerHTML = finalHTML;
 
-        const content2 = document.createElement('div');
-        content2.className = 'marquee-content';
-        content2.setAttribute('aria-hidden', 'true'); // Nasconde il duplicato agli screen reader
-        content2.innerHTML = fullHTML;
+        const content2 = content1.cloneNode(true);
+        content2.setAttribute('aria-hidden', 'true');
 
-        // Inserisce i blocchi nel DOM
         this.track.appendChild(content1);
         this.track.appendChild(content2);
     }
 
     addEventListeners() {
-        // 5. Ricalcola tutto se l'utente ridimensiona o zooma la finestra
         window.addEventListener('resize', () => {
             clearTimeout(this.resizeTimer);
-            // Il Debounce (250ms) evita che lo script ricalcoli 100 volte al secondo durante il trascinamento della finestra
-            this.resizeTimer = setTimeout(() => {
-                this.buildMarquee();
-            }, 250);
+            this.resizeTimer = setTimeout(() => this.buildMarquee(), 250);
         });
     }
 }
 
-// Inizializza il motore quando il DOM è pronto
+// Inizializzazione automatica
 document.addEventListener("DOMContentLoaded", () => {
-    new InfiniteMarquee('dynamicMarquee');
+    if(document.getElementById('dynamicMarquee')) {
+        new InfiniteMarquee('dynamicMarquee');
+    }
 });
