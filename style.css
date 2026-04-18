@@ -565,12 +565,6 @@ a { color: inherit; text-decoration: none; }
 .hero__scroll-hint span { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.35em; text-transform: uppercase; color: var(--gold-lt); text-shadow: 0 0 10px var(--gold-glow); }
 .scroll-line { width: 2px; height: 60px; background: linear-gradient(to bottom, var(--gold-lt), transparent); transform-origin: top; animation: scrollLine 2s ease-in-out infinite; }
 
-/* ── MARQUEE ──────────────────────────────────────────────── */
-.marquee-strip { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 1.2rem 0; overflow: hidden; box-shadow: 0 5px 30px rgba(0,0,0,0.8) inset; }
-.marquee-track { display: flex; gap: 3rem; white-space: nowrap; animation: marqueeScroll 25s linear infinite; }
-.marquee-track span { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text); }
-.marquee-track .sep { color: var(--gold-lt); letter-spacing: 0; text-shadow: 0 0 15px var(--white); }
-
 /* ── ABOUT (TEMPLE FOUNDATIONS) ───────────────────────────── */
 .about { padding: 10rem 6vw; background: radial-gradient(circle at top right, var(--surface2), var(--deep) 70%); }
 .about__grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 8rem; align-items: center; }
