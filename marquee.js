@@ -1,6 +1,5 @@
 /* ============================================================
-   MARQUEE ENGINE — SISTEMA OLYMPUS (JS AGGIORNATO)
-   Loop infinito seamless · Immagini a dimensione corretta
+   MARQUEE ENGINE — SISTEMA OLYMPUS (VERSIONE FINALE)
    ============================================================ */
 
 class InfiniteMarquee {
@@ -8,6 +7,11 @@ class InfiniteMarquee {
         this.track = document.getElementById(trackId);
         if (!this.track) return;
 
+        /* ── CONFIGURA QUI I NOMI FILE ──────────────────────────
+           Sostituisci con i nomi esatti delle tue immagini.
+           Il percorso basePath deve corrispondere alla cartella
+           dove si trovano i file sul server.
+        ─────────────────────────────────────────────────────── */
         this.rivestimenti = [
             'legno-scuro.jpg',
             'alluminio-satinato.jpg',
@@ -16,18 +20,35 @@ class InfiniteMarquee {
             'rovere-antico.jpg'
         ];
 
+        /* Percorso relativo dalla radice del sito.
+           Esempi validi:
+             'assets/img/rivestimenti/'
+             'img/rivestimenti/'
+             'rivestimenti/'
+        */
         this.basePath    = 'assets/img/rivestimenti/';
         this.resizeTimer = null;
-        this.imgIndex    = 0; // indice progressivo per non ripetere la stessa img di fila
+        this.imgIndex    = 0;
 
         this.init();
     }
 
-    /* ── Immagine sequenziale (evita ripetizioni consecutive) ── */
+    /* ── Immagine con gestione errore ── */
     nextImageTag() {
-        const src = `${this.basePath}${this.rivestimenti[this.imgIndex % this.rivestimenti.length]}`;
+        const name = this.rivestimenti[this.imgIndex % this.rivestimenti.length];
+        const src  = `${this.basePath}${name}`;
         this.imgIndex++;
-        return `<img src="${src}" class="marquee-img" loading="lazy" alt="Rivestimento" draggable="false">`;
+
+        /* onerror: se il file non esiste, l'immagine viene nascosta
+           senza mostrare il broken-image con il testo alt */
+        return `<img
+            src="${src}"
+            class="marquee-img"
+            loading="lazy"
+            alt=""
+            draggable="false"
+            onerror="this.classList.add('broken')"
+        >`;
     }
 
     /* ── Un segmento di contenuto ── */
@@ -42,7 +63,7 @@ class InfiniteMarquee {
         `;
     }
 
-    /* ── Misura la larghezza reale di un segmento ── */
+    /* ── Misura la larghezza di un segmento ── */
     measureSegmentWidth() {
         const probe = document.createElement('div');
         probe.className   = 'marquee-content';
@@ -57,9 +78,7 @@ class InfiniteMarquee {
         `;
         probe.innerHTML = this.createSegment();
         document.body.appendChild(probe);
-
-        // Aspetta che le img carichino almeno il layout
-        const w = probe.scrollWidth || probe.offsetWidth || 600;
+        const w = probe.scrollWidth || 600;
         document.body.removeChild(probe);
         return w;
     }
@@ -72,31 +91,20 @@ class InfiniteMarquee {
         const segmentWidth = this.measureSegmentWidth();
         const copies = Math.ceil((window.innerWidth * 2) / segmentWidth) + 3;
 
-        // Blocco A
-        const blockA = document.createElement('div');
-        blockA.className = 'marquee-content';
-
         let html = '';
         for (let i = 0; i < copies; i++) html += this.createSegment();
+
+        /* Blocco A */
+        const blockA = document.createElement('div');
+        blockA.className = 'marquee-content';
         blockA.innerHTML = html;
 
-        // Blocco B — clone esatto di A per il loop -50%
+        /* Blocco B — clone identico per il loop seamless -50% */
         const blockB = blockA.cloneNode(true);
         blockB.setAttribute('aria-hidden', 'true');
 
         this.track.appendChild(blockA);
         this.track.appendChild(blockB);
-
-        /* 
-         * L'animazione translateX(-50%) sul track funziona perché
-         * blockA e blockB sono identici → il track è esattamente
-         * il doppio di un blocco, quindi a metà l'occhio non vede stacchi.
-         *
-         * La durata è già definita in CSS con --marquee-speed.
-         * Qui possiamo sovrascriverla dinamicamente se serve:
-         */
-        const speed = Math.max(20, Math.round(segmentWidth * copies / 30)); // ~30px/s
-        this.track.style.setProperty('--marquee-speed-computed', `${speed}s`);
     }
 
     /* ── Event listeners ── */
@@ -106,7 +114,6 @@ class InfiniteMarquee {
             this.resizeTimer = setTimeout(() => this.buildMarquee(), 250);
         });
 
-        // Pausa se la scheda è in background (risparmio CPU)
         document.addEventListener('visibilitychange', () => {
             this.track.style.animationPlayState =
                 document.hidden ? 'paused' : 'running';
@@ -119,7 +126,7 @@ class InfiniteMarquee {
     }
 }
 
-/* ── Avvio automatico ── */
+/* ── Avvio ── */
 document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('dynamicMarquee')) {
         new InfiniteMarquee('dynamicMarquee');
