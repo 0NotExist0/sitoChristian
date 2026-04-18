@@ -1,6 +1,6 @@
 /**
  * LIGHTBOX ENGINE — Luxury Doors Professional
- * Versione 3.2 — Integrated Divine Loader, Asset Management & Animated Caption
+ * Versione 3.3 — Integrated Divine Loader & Auto-Spacing Fix
  */
 const Lightbox = {
     // Configurazione per attivazione vista 3D
@@ -14,11 +14,7 @@ const Lightbox = {
     currentIndex: 0,
     isInitialized: false,
 
-    /**
-     * Inizializza il modulo e aggancia gli eventi al DOM.
-     */
     init() {
-        // --- GUARD CLAUSE ---
         if (this.isInitialized) return;
 
         // Selezione elementi base
@@ -49,10 +45,9 @@ const Lightbox = {
             return;
         }
 
-        // Setup UI Dinamica (Sidebar e Tasto Indietro)
         this.setupDynamicUI();
 
-        // --- INIEZIONE CSS DINAMICO PER LA DIDASCALIA ANIMATA ---
+        // INIEZIONE CSS DINAMICO
         if (!document.getElementById("didascaliaDivinaStyles")) {
             const style = document.createElement("style");
             style.id = "didascaliaDivinaStyles";
@@ -66,14 +61,14 @@ const Lightbox = {
                     position: absolute !important;
                     bottom: 30px !important;
                     right: 30px !important;
-                    z-index: 9999 !important; /* Forza la didascalia sopra l'immagine */
-                    font-family: 'Cinzel', serif, sans-serif; /* Font elegante */
+                    z-index: 9999 !important;
+                    font-family: 'Cinzel', serif, sans-serif;
                     font-size: 1.2rem;
                     font-weight: bold;
                     letter-spacing: 1px;
-                    pointer-events: none; /* Impedisce che blocchi i click sottostanti */
+                    pointer-events: none;
                     animation: goldSilverAnim 3.5s infinite ease-in-out;
-                    background: rgba(0, 0, 0, 0.65); /* Sfondo scuro per far risaltare l'oro */
+                    background: rgba(0, 0, 0, 0.65);
                     padding: 10px 20px;
                     border-radius: 6px;
                     border: 1px solid rgba(212,175,55, 0.3);
@@ -92,7 +87,6 @@ const Lightbox = {
         this.backBtn.addEventListener("click", () => this.goBack());
         document.addEventListener("keydown", (e) => this.handleKeyboard(e));
         
-        // Controllo apertura porta 3D
         if (this.slider && this.hinge) {
             this.slider.addEventListener("input", (e) => {
                 const angle = (e.target.value / 100) * 85;
@@ -101,12 +95,8 @@ const Lightbox = {
         }
 
         this.isInitialized = true;
-        console.log("[Lightbox v3.2] Engine inizializzato con Didascalia Animata.");
     },
 
-    /**
-     * Crea gli elementi UI dinamici (Sidebar & Breadcrumbs).
-     */
     setupDynamicUI() {
         if (!document.querySelector(".lightbox__col--sidebar")) {
             this.sidebar = document.createElement("div");
@@ -130,14 +120,10 @@ const Lightbox = {
         }
     },
 
-    /**
-     * Apertura della galleria con gestione ricorsiva.
-     */
     open(dataNode, startIndex = 0, categoryName = "", isBack = false) {
         if (!this.isInitialized) this.init();
         if (!dataNode) return;
 
-        // Gestione History
         if (!isBack && this.currentNode) {
             this.history.push({ node: this.currentNode, name: this.currentName });
         }
@@ -149,18 +135,17 @@ const Lightbox = {
             this.backBtn.style.display = this.history.length > 0 ? "block" : "none";
         }
         
-        // Whitelist per Vista 3D
-        const nameUpper = categoryName.toUpperCase();
-        const is3DAllowed = this.foldersWith3D.some(folder => folder.toUpperCase() === nameUpper);
+        // FIX 3D: Rendiamo il controllo immune agli spazi per supportare il fix del menu
+        const safeCategoryName = categoryName.replace(/\s+/g, '').toUpperCase();
+        const is3DAllowed = this.foldersWith3D.some(folder => folder.replace(/\s+/g, '').toUpperCase() === safeCategoryName);
+        
         if (this.col3D) this.col3D.style.display = is3DAllowed ? "flex" : "none";
 
-        // Reset Porta 3D
         if (this.slider && this.hinge) {
             this.slider.value = 0;
             this.hinge.style.transform = `rotateY(0deg)`;
         }
 
-        // Parsing Dati
         const looseImages = [];
         const subFolders = {};
 
@@ -177,7 +162,6 @@ const Lightbox = {
             });
         }
 
-        // Render Sidebar
         if (Object.keys(subFolders).length > 0) {
             this.sidebar.style.display = "flex";
             this.sidebarTitle.textContent = this.formatSafeName(categoryName);
@@ -186,7 +170,6 @@ const Lightbox = {
             this.sidebar.style.display = "none";
         }
 
-        // Render Immagini
         if (looseImages.length > 0) {
             this.imgCol.style.display = "flex";
             this.images = looseImages;
@@ -201,36 +184,28 @@ const Lightbox = {
         document.body.style.overflow = "hidden";
     },
 
-    /**
-     * Aggiorna l'immagine visualizzata con logica di caricamento divina.
-     */
     async updateView() {
         if (!this.images.length || !this.imgElement) return;
         
         const currentImageSrc = this.images[this.currentIndex];
         
-        // 1. Reset visivo immediato
         this.imgElement.style.opacity = "0";
         if (this.loader) {
-            this.loader.style.display = "flex"; // Attiva il fulmine
+            this.loader.style.display = "flex";
         }
 
-        // 2. Logica di pre-caricamento
         const tempImg = new Image();
         tempImg.src = currentImageSrc;
 
         tempImg.onload = () => {
-            // Applichiamo la sorgente all'elemento reale del DOM
             this.imgElement.src = currentImageSrc;
 
-            // 3. Delay "Divino": diamo tempo all'animazione di essere vista (es. 400ms)
             setTimeout(() => {
                 if (this.loader) this.loader.style.display = "none";
                 this.imgElement.style.opacity = "1";
             }, 400);
         };
 
-        // Didascalia e Texture 3D (istantanei)
         const nomeFormattato = this.formatSafeName(this.currentName);
         this.counter.textContent = `${nomeFormattato} — ${this.currentIndex + 1} / ${this.images.length}`;
         
@@ -266,6 +241,7 @@ const Lightbox = {
 
     formatSafeName(name) {
         if (!name) return "ESPLORA";
+        // Formattazione spaziatura CamelCase garantita in tutta la Lightbox
         return name.replace(/_/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2').toUpperCase();
     },
 
@@ -305,8 +281,5 @@ const Lightbox = {
     }
 };
 
-// Esposizione Globale
 window.Lightbox = Lightbox;
-
-// Inizializzazione al boot
 document.addEventListener("DOMContentLoaded", () => Lightbox.init());
