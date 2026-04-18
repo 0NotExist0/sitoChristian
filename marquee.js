@@ -1,53 +1,32 @@
 /* ============================================================
-   MARQUEE ENGINE — SISTEMA OLYMPUS (VERSIONE FINALE)
+   MARQUEE ENGINE — SISTEMA OLYMPUS (INTEGRATO CON DRIVE)
    ============================================================ */
 
 class InfiniteMarquee {
-    constructor(trackId) {
+    constructor(trackId, targetFolder = null) {
         this.track = document.getElementById(trackId);
         if (!this.track) return;
 
-        /* ── CONFIGURA QUI I NOMI FILE ──────────────────────────
-           Sostituisci con i nomi esatti delle tue immagini.
-           Il percorso basePath deve corrispondere alla cartella
-           dove si trovano i file sul server.
-        ─────────────────────────────────────────────────────── */
-        this.rivestimenti = [
-            'legno-scuro.jpg',
-            'alluminio-satinato.jpg',
-            'noce-nazionale.jpg',
-            'alluminio-titanio.jpg',
-            'rovere-antico.jpg'
-        ];
-
-        /* Percorso relativo dalla radice del sito.
-           Esempi validi:
-             'assets/img/rivestimenti/'
-             'img/rivestimenti/'
-             'rivestimenti/'
-        */
-        this.basePath    = 'assets/img/rivestimenti/';
         this.resizeTimer = null;
         this.imgIndex    = 0;
+        this.images      = []; // Verrà popolato da Drive
+        this.targetFolder = targetFolder; // Nome cartella opzionale
 
         this.init();
     }
 
-    /* ── Immagine con gestione errore ── */
+    /* ── Immagine dal Drive con gestione errore ── */
     nextImageTag() {
-        const name = this.rivestimenti[this.imgIndex % this.rivestimenti.length];
-        const src  = `${this.basePath}${name}`;
+        const src = this.images[this.imgIndex % this.images.length];
         this.imgIndex++;
 
-        /* onerror: se il file non esiste, l'immagine viene nascosta
-           senza mostrare il broken-image con il testo alt */
         return `<img
             src="${src}"
             class="marquee-img"
             loading="lazy"
-            alt=""
+            alt="Porta Nova Design"
             draggable="false"
-            onerror="this.classList.add('broken')"
+            onerror="this.style.display='none'"
         >`;
     }
 
@@ -58,7 +37,7 @@ class InfiniteMarquee {
             ${this.nextImageTag()}<span class="sep">◈</span>
             <span>DESIGN ESCLUSIVO</span><span class="sep">◈</span>
             ${this.nextImageTag()}<span class="sep">◈</span>
-            <span>Rivestimento</span><span class="sep">◈</span>
+            <span>RIVESTIMENTO</span><span class="sep">◈</span>
             ${this.nextImageTag()}<span class="sep">◈</span>
         `;
     }
@@ -120,7 +99,28 @@ class InfiniteMarquee {
         });
     }
 
+    /* ── Inizializzazione asincrona con Drive ── */
     init() {
+        // Se window.galleryData non è ancora pronto, riprova tra poco
+        if (!window.galleryData) {
+            setTimeout(() => this.init(), 100);
+            return;
+        }
+
+        // Estrazione delle immagini tramite il DataEngine
+        let dataNode = window.galleryData;
+        if (this.targetFolder) {
+            const foundData = DataEngine.findFolder(window.galleryData, this.targetFolder);
+            if (foundData) dataNode = foundData;
+        }
+
+        this.images = DataEngine.extractImages(dataNode);
+
+        // Fallback di sicurezza se non ci sono immagini nella cartella
+        if (this.images.length === 0) {
+            this.images = ["https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=600&auto=format&fit=crop"];
+        }
+
         this.buildMarquee();
         this.addEventListeners();
     }
@@ -129,6 +129,8 @@ class InfiniteMarquee {
 /* ── Avvio ── */
 document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('dynamicMarquee')) {
-        new InfiniteMarquee('dynamicMarquee');
+        // Puoi passare null per usare tutte le immagini del Drive,
+        // oppure una stringa (es. 'Rivestimenti in Legno') per una specifica cartella.
+        new InfiniteMarquee('dynamicMarquee', null); 
     }
 });
