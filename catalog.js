@@ -13,7 +13,6 @@ const CatalogSchema = [
         type: 'gallery',
         subItems: [
             { driveFolder: 'Lisce', label: 'LISCE' },
-            { driveFolder: 'Pannelli in alluminio', label: 'PANNELLI ALLUMINIO' },
             { driveFolder: 'Rivestimenti in alluminio + inseriti', label: 'PANNELLI ALLUMINIO + INS.' },
             { driveFolder: 'Rivestimenti in Legno', label: 'PANNELLI IN LEGNO' },
             { driveFolder: 'Pannelli in MDF', label: 'PANNELLI IN MDF LACCATI' }
