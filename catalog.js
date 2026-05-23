@@ -25,7 +25,7 @@ const CatalogSchema = [
         title: 'PORTE INTERNE',
         type: 'gallery',
         subItems: [
-            { driveFolder: 'PorteInterne', label: 'CATALOGO COMPLETO' } // Collega la cartella dello screen
+            { driveFolder: 'PorteInterne', label: 'PORTE LACCATE' }
         ]
     },
     // FINE NUOVA SEZIONE PORTE INTERNE
