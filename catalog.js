@@ -19,6 +19,16 @@ const CatalogSchema = [
             { driveFolder: 'Pannelli in MDF', label: 'PANNELLI IN MDF LACCATI' }
         ]
     },
+    // INIZIO NUOVA SEZIONE PORTE INTERNE
+    {
+        id: 'porte_interne',
+        title: 'PORTE INTERNE',
+        type: 'gallery',
+        subItems: [
+            { driveFolder: 'PorteInterne', label: 'CATALOGO COMPLETO' } // Collega la cartella dello screen
+        ]
+    },
+    // FINE NUOVA SEZIONE PORTE INTERNE
     {
         id: 'accessori',
         title: 'ACCESSORI',
