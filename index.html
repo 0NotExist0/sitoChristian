@@ -1,477 +1,103 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Luxury Doors — Porte di Lusso</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Raleway:wght@200;300;400;500&display=swap" rel="stylesheet" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOT_Exist - Elaborating</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000000;
+            color: #00ff00; /* Verde acido tipico free party */
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            text-transform: uppercase;
+        }
+
+        /* Contenitore principale */
+        .rave-container {
+            text-align: center;
+            letter-spacing: 4px;
+        }
+
+        /* Animazione Glitch Hard Tekno per il testo principale */
+        .title {
+            font-size: 4rem;
+            font-weight: 900;
+            position: relative;
+            animation: strobe 0.15s infinite, glitch 0.4s infinite alternate;
+            text-shadow: 3px 3px 0 #ff0055, -3px -3px 0 #0000ff;
+        }
+
+        /* Nome d'arte sottile sotto */
+        .subtitle {
+            font-size: 1rem;
+            margin-top: 20px;
+            color: #ffffff;
+            opacity: 0.7;
+            animation: pulse 1s infinite steps(2);
+        }
+
+        /* KEYFRAMES ANIMAZIONI */
+        
+        /* Effetto distorsione glitch */
+        @keyframes glitch {
+            0% {
+                transform: skewX(-3deg) scaleY(1);
+                letter-spacing: 4px;
+            }
+            50% {
+                transform: skewX(5deg) scaleY(1.1);
+                color: #ff0055;
+            }
+            100% {
+                transform: skewX(-5deg) scaleY(0.9);
+                letter-spacing: 6px;
+            }
+        }
+
+        /* Effetto Strobo/Flicker rapido */
+        @keyframes strobe {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+            75% { opacity: 0.4; }
+        }
+
+        /* Pulsazione hardcore a scatti per il sottotitolo */
+        @keyframes pulse {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 0.9; }
+        }
+
+        /* Linee di disturbo della TV analogica (sfondo underground) */
+        body::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2;
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+        }
+    </style>
 </head>
 <body>
-  
-  <div id="custom-cursor">
-    <div class="cursor-wrapper">
-        <svg width="0" height="0" style="position:absolute;">
-            <defs>
-                <linearGradient id="gold-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#fff5b8" />
-                    <stop offset="40%" stop-color="#d4af37" />
-                    <stop offset="100%" stop-color="#8a6e1c" />
-                </linearGradient>
-            </defs>
-        </svg>
 
-        <div class="cursor-icon icon-plus">
-            <svg viewBox="0 0 24 24" width="28" height="28" stroke="url(#gold-gradient)" stroke-width="1.5" stroke-linecap="square" fill="none">
-                <line x1="12" y1="0" x2="12" y2="24"></line>
-                <line x1="0" y1="12" x2="24" y2="12"></line>
-                <polygon points="12,10 14,12 12,14 10,12" fill="url(#gold-gradient)" stroke="none"></polygon>
-            </svg>
-        </div>
-
-        <div class="cursor-icon icon-hand">
-            <svg viewBox="0 0 24 30" width="38" height="48" xmlns="http://www.w3.org/2000/svg">
-                <!-- Mano unificata: indice esteso + palmo + 3 dita piegate -->
-                <path d="
-                    M 7,2 C5.7,2 4.7,3 4.7,4.5
-                    L4.7,16
-                    L3,15.3 C1.5,15 0.8,16.7 1.8,17.6
-                    L6,22 C7.4,23.8 9.7,25 12,25 L16,25
-                    C19.5,25 22,22.3 22,19 L22,12
-                    C22,10.7 21,9.7 19.7,9.7
-                    C19.3,9.7 18.9,9.8 18.6,10
-                    C18.2,9 17.3,8.3 16.2,8.3
-                    C15.6,8.3 15.2,8.5 14.8,8.9
-                    C14.4,8 13.5,7.3 12.4,7.3
-                    C11.8,7.3 11.4,7.5 11,7.9
-                    L11,4.5 C11,3 10,2 8.7,2 Z
-                " fill="url(#gold-gradient)" stroke="#1a0d00" stroke-width="0.8" stroke-linejoin="round"/>
-                <!-- Separazioni tra dita -->
-                <line x1="11" y1="8.5" x2="11" y2="15.8" stroke="#6a4e10" stroke-width="0.6" opacity="0.7"/>
-                <line x1="14.8" y1="9.5" x2="14.8" y2="15.8" stroke="#6a4e10" stroke-width="0.6" opacity="0.7"/>
-                <line x1="18.6" y1="10.5" x2="18.6" y2="15.8" stroke="#6a4e10" stroke-width="0.6" opacity="0.7"/>
-                <!-- Nocca sull'indice -->
-                <path d="M 4.9,9 Q 6,8.3 7,8.3 Q 8,8.3 9.1,9" stroke="#c9a230" stroke-width="0.5" fill="none" opacity="0.5"/>
-                <!-- Scintilla / fulmine sulla punta -->
-                <path d="M 7.2,0.2 L 5.8,2.8 L 7.8,2.5 L 6.2,5.5"
-                      stroke="#fff5b8" stroke-width="1.1" fill="none"
-                      stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
-            </svg>
-        </div>
-    </div>
-  </div>
-
-  <nav class="nav" id="nav">
-    <div class="nav__logo">
-      <span class="nav__logo-symbol">◈</span>
-      <span class="nav__logo-text">Luxury Doors</span>
-    </div>
-    <ul class="nav__links">
-      <li><a href="#collections" class="nav__link">Catalogo</a></li>
-      <li><a href="#our-works" class="nav__link">I Lavori</a></li>
-      <li><a href="#contact" class="nav__link">Contatto</a></li>
-    </ul>
-    <button id="themeToggle" class="nav__link theme-btn-style">
-      <span class="theme-toggle-icon">☀️</span>
-    </button>
-    <button class="nav__menu-btn" id="menuBtn" aria-label="Menu">
-      <span></span><span></span>
-    </button>
-  </nav>
-
-  <div class="mobile-menu" id="mobileMenu">
-    <ul>
-      <li><a href="#collections" class="mobile-link">Catalogo</a></li>
-      <li><a href="#craft" class="mobile-link">La Nostra Mission</a></li>
-      <li><a href="#contact" class="mobile-link">Contatto</a></li>
-    </ul>
-  </div>
-
-  <section class="hero" id="hero">
-    <div class="hero__corridor">
-      <div class="corridor__layer corridor__layer--1"></div>
-      <div class="corridor__layer corridor__layer--2"></div>
-      <div class="corridor__layer corridor__layer--3"></div>
-      <div class="corridor__layer corridor__layer--4"></div>
-      <div class="corridor__layer corridor__layer--5"></div>
-      <div class="corridor__layer corridor__layer--6"></div>
-      <div class="corridor__door">
-        <div class="door__frame">
-          <div class="door__panel door__panel--left"></div>
-          <div class="door__panel door__panel--right"></div>
-          <div class="door__light"></div>
-        </div>
-      </div>
+    <div class="rave-container">
+        <h1 class="title">Elaborating</h1>
+        <p class="subtitle">NOT_Exist // LIVE SET LOADING</p>
     </div>
 
-    <div class="hero__content">
-      <p class="hero__eyebrow reveal-up">Una porta non è un confine, ma l’invito del destino a scegliere il proprio domani: chiudila per custodire la tua pace, aprila per accogliere il mondo.</p>
-      <h1 class="hero__title reveal-up">
-        <span>Ogni soglia</span>
-        <em>racconta</em>
-        <span>un'epoca</span>
-      </h1>
-      <p class="hero__subtitle reveal-up">Porte che non separano ambienti,<br>ma uniscono visioni al mondo.</p>
-      <a href="#collections" class="hero__cta reveal-up">
-        <span>Esplora il Catalogo</span>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M5 12h14M12 5l7 7-7 7"/>
-        </svg>
-      </a>
-    </div>
-
-    <div class="hero__scroll-hint">
-      <span>Scorri</span>
-      <div class="scroll-line"></div>
-    </div>
-    <div class="hero__grain"></div>
-  </section>
-
-  <div class="marquee-strip">
-    <div class="marquee-track" id="dynamicMarquee">
-      </div>
-  </div>
-
-  <section class="our-works" id="our-works">
-    <div class="our-works__header">
-      <p class="section-label">/ Eccellenza sul campo</p>
-      <h2 class="our-works__title reveal-up">Stile<br><em>italiano</em></h2>
-    </div>
-
-    <div class="god-text-container reveal-up">
-      <p class="god-text">
-        Nella mitologia greca l'Aegis era molto più di un semplice scudo. Era un'arma magica e divina, una sorta di corazza che incarnava l'invincibilità e la potenza della divinità che la indossava, usata da Zeus e Atena per diffondere terrore nei nemici e garantire una difesa assoluta.<br><br>
-        Oggi abbiamo scelto di chiamare la nostra porta blindata con lo stesso nome. La porta Aegis non è solo un serramento di altissima classe, è la materializzazione di quella stessa forza ineguagliabile che incarna l'invincibilità. Un nome che, ieri come oggi, comunica una sola e unica sensazione: sicurezza totale e resistenza leggendaria.
-      </p>
-      <cite class="god-cite">— Fondatore</cite>
-    </div>
-  </section>
-
-  <section class="about" id="about">
-    <div class="about__grid">
-      <div class="about__visual">
-        <div class="about__frame">
-          <div class="about__inner-frame">
-            <div class="about__geometry">
-              <div class="geo geo--rect"></div>
-              <div class="geo geo--diagonal"></div>
-              <div class="geo geo--circle"></div>
-            </div>
-            <div class="about__number">Luxury Doors</div>
-          </div>
-        </div>
-        <div class="about__stat-grid">
-          <div class="stat-card">
-            <div class="stat-card__num">2.400+</div>
-            <div class="stat-card__label">Progetti realizzati</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-card__num">100 + modelli</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="about__text">
-        <p class="section-label">/ La Nostra Filosofia</p>
-        <h2 class="about__title">Oltre la soglia,<br><em>un universo</em></h2>
-        <p class="about__body">
-          Una porta non è semplicemente un elemento architettonico. È il confine tra due realtà, 
-          il momento sospeso prima che una nuova esperienza abbia inizio. Da oltre trent'anni 
-          progettiamo questo passaggio con la stessa devozione di un orafo.
-        </p>
-        <p class="about__body">
-          Ogni pezzo nasce da un dialogo tra materia e visione: legni selezionati a mano, 
-          metalli lavorati in fusione, superfici trattate con processi esclusivi che conferiscono 
-          una profondità visiva ineguagliabile.
-        </p>
-        <a href="#craft" class="text-link">
-          Il nostro processo
-          <span class="text-link__line"></span>
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <section class="collections" id="collections">
-    <div class="collections__header">
-      <p class="section-label">/ Il Catalogo Completo</p>
-      
-      <div class="collections__super-actions">
-        <button class="gold-btn" data-action="sup1">
-          <span class="gold-btn__text">Catalogo Pannelli Alluminio 1</span>
-          <span class="gold-btn__shine"></span>
-        </button>
-        <button class="gold-btn" data-action="sup2">
-          <span class="gold-btn__text">Catalogo Pannelli Alluminio 2</span>
-          <span class="gold-btn__shine"></span>
-        </button>
-      </div>
-    </div>
-
-    <div id="catalogLoader" class="divine-loader section-loader">
-      <div class="divine-loader__icon">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
-      <p class="divine-loader__text">Caricamento Catalogo</p>
-    </div>
-
-    <div class="collections__grid" id="grid-container"></div>
-  </section>
-
-  <section class="craft" id="craft">
-    <div class="craft__bg">
-      <div class="craft__perspective-grid"></div>
-    </div>
-    <div class="craft__content">
-      <div class="craft__left">
-        <p class="section-label">/ Il Processo</p>
-        <h2 class="craft__title">L'arte<br><em>della</em><em> </em><em>Bellezza</em></h2>
-        <p class="craft__body">
-          Progettiamo l'accoglienza, selezioniamo l'unico. Ogni nostra porta è il frutto di una ricerca estetica che trasforma l'esperienza dei maestri artigiani in un elemento d’arredo senza tempo
-        </p>
-      </div>
-
-      <div class="craft__steps">
-        <div class="craft-step">
-          <div class="craft-step__num">I</div>
-          <div class="craft-step__info"><h4>Consulenza e Progetto</h4></div>
-        </div>
-        <div class="craft-step__connector"></div>
-        <div class="craft-step">
-          <div class="craft-step__num">II</div>
-          <div class="craft-step__info"><h4>Qualità dei Materiali</h4></div>
-        </div>
-        <div class="craft-step__connector"></div>
-        <div class="craft-step">
-          <div class="craft-step__num">III</div>
-          <div class="craft-step__info"><h4>Lavorazione Artigianale</h4></div>
-        </div>
-        <div class="craft-step__connector"></div>
-        <div class="craft-step">
-          <div class="craft-step__num">IV</div>
-          <div class="craft-step__info"><h4>Consegna rapida</h4></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="contact" id="contact">
-    <div class="contact__bg">
-      <div class="contact__mirror-frame"></div>
-    </div>
-    <div class="contact__inner">
-      <p class="section-label">/ Parlaci del Tuo Spazio</p>
-      <h2 class="contact__title">Inizia il<br><em>tuo progetto</em></h2>
-      <p class="contact__sub">Ogni grande porta nasce da una conversazione. Scrivici.</p>
-      
-      <form class="contact__form" id="contactForm" novalidate>
-        <div class="form-row">
-          <div class="form-field">
-            <input type="text" id="name" name="name" placeholder=" " required />
-            <label for="name">Nome</label>
-            <div class="field-line"></div>
-          </div>
-          <div class="form-field">
-            <input type="tel" id="phone" name="phone" placeholder=" " />
-            <label for="phone">Telefono</label>
-            <div class="field-line"></div>
-          </div>
-        </div>
-        <div class="form-field">
-          <input type="email" id="email" name="email" placeholder=" " required />
-          <label for="email">Email</label>
-          <div class="field-line"></div>
-        </div>
-        <div class="form-field">
-          <textarea id="message" name="message" rows="4" placeholder=" " required></textarea>
-          <label for="message">Descrivi la tua richiesta</label>
-          <div class="field-line"></div>
-        </div>
-        <button type="submit" class="form-submit">
-          <span class="form-submit__text">Invia il Messaggio</span>
-          <span class="form-submit__icon">◈</span>
-        </button>
-        <div class="form-success" id="formSuccess">
-          <span class="form-success__icon">✦</span>
-          <p>Messaggio inviato. Vi risponderemo entro 24 ore.</p>
-        </div>
-      </form>
-    </div>
-  </section>
-
-  <footer class="footer">
-    <div class="footer__top">
-      <div class="footer__brand">
-        <span class="footer__logo-symbol">◈</span>
-        <span class="footer__logo-text">Luxury Doors</span>
-        <p>Luxury Doors<br>Porte Blindate</p>
-      </div>
-      <div class="footer__links">
-        <h5>Navigazione</h5>
-        <a href="#about">La Nostra Azienda</a>
-        <a href="#collections">Catalogo</a>
-        <a href="#craft">Il Processo</a>
-        <a href="#contact">Contatto</a>
-      </div>
-      <div class="footer__links">
-        <h5>Contatti</h5>
-
-        <span>Sede 1 Vibo Valentia C.DA Aereoporto</span>
-        <a href="mailto:pontiglione@luxurydoors.org">luxurydoors.vv@luxurydoors.org</a>
-        <span>tel.3517792450</span>
-
-        <span>Sede 2: Borgaro Torinese via Lanzo 89</span>
-        <a href="mailto:pontiglione@luxurydoors.org">luxurydoors@luxurydoors.org</a>
-        <span>tel.327 106 82981</span>
-
-      </div>
-
-      <div class="footer__links">
-        <h5>Tieniti sempre aggioronato!</h5>
-      </div>
-    </div>
-    <div class="footer__bottom">
-      <span>© 2026 Luxury Doors — Tutti i diritti riservati<br>Created By NotExist Softwares</span>
-      <span>#LuxuryDoors</span>
-    </div>
-  </footer>
-
-  <div class="lightbox" id="lightbox">
-    <div class="lightbox__overlay" id="lightboxOverlay"></div>
-    <button class="lightbox__close" id="lightboxClose">✕</button>
-    
-    <div class="lightbox__layout">
-      <div class="lightbox__col lightbox__col--img">
-        <div id="divineLoader" class="divine-loader">
-          <div class="divine-loader__icon">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <p class="divine-loader__text">Caricamento Galleria</p>
-        </div>
-        <img src="" alt="Galleria" id="lightboxImage" class="lightbox__img">
-        <div class="lightbox__nav">
-          <button class="lightbox__btn" id="lightboxPrev">←</button>
-          <span class="lightbox__counter" id="lightboxCounter">1 / 1</span>
-          <button class="lightbox__btn" id="lightboxNext">→</button>
-        </div>
-      </div>
-
-      <div class="lightbox__col lightbox__col--3d">
-        <h4 class="lightbox__3d-title">Ispeziona in 3D</h4>
-        <div class="door-3d-scene" id="door3DScene">
-          <div class="door-3d-hinge" id="door3DHinge">
-            <div class="door-3d-mesh">
-              <div class="door-3d-face door-3d-front" id="door3DFront"></div>
-              <div class="door-3d-face door-3d-edge"></div>
-              <div class="door-3d-face door-3d-back"></div>
-            </div>
-          </div>
-        </div>
-        <div class="lightbox__3d-controls">
-          <input type="range" id="door3DSlider" min="0" max="100" value="0" class="door-slider">
-          <label for="door3DSlider">Apri / Chiudi Porta</label>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="catalog-modal" id="catalogModal">
-    <div class="catalog-modal__overlay" id="catalogModalOverlay"></div>
-    <div class="catalog-modal__content">
-        <button class="catalog-modal__close" id="catalogModalClose">✕ Chiudi</button>
-        <div class="catalog-modal__loader">
-            <div class="loader-spinner"></div>
-            <p>Caricamento Catalogo...</p>
-        </div>
-        <iframe src="" id="catalogIframe" frameborder="0" allowfullscreen></iframe>
-    </div>
-  </div>
-  <!-- ================================================
-     WHATSAPP FLOATING — Luxury Doors Theme
-     ================================================ -->
-
-<!-- Pulsante Floating -->
-<button id="wa-fab" aria-label="Scrivici su WhatsApp">
-  <svg width="26" height="26" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M16 2.933C8.805 2.933 2.933 8.805 2.933 16c0 2.31.617 4.476 1.693 6.348L2.4 29.6l7.42-2.193A13.017 13.017 0 0016 29.067c7.195 0 13.067-5.872 13.067-13.067S23.195 2.933 16 2.933z" fill="currentColor" opacity="0.9"/>
-    <path d="M22.22 18.91c-.32-.16-1.895-.935-2.19-1.04-.293-.107-.507-.16-.72.16-.213.32-.827 1.04-1.014 1.253-.187.213-.373.24-.693.08-.32-.16-1.352-.498-2.574-1.588-.952-.848-1.594-1.895-1.78-2.215-.187-.32-.02-.493.14-.653.144-.144.32-.373.48-.56.16-.187.213-.32.32-.533.107-.213.053-.4-.027-.56-.08-.16-.72-1.735-.987-2.375-.26-.62-.525-.535-.72-.545-.187-.008-.4-.01-.613-.01a1.18 1.18 0 00-.853.4c-.293.32-1.12 1.093-1.12 2.668 0 1.575 1.147 3.095 1.307 3.308.16.213 2.255 3.442 5.464 4.828.764.33 1.36.527 1.825.674.767.244 1.465.21 2.017.127.615-.092 1.895-.775 2.162-1.524.267-.748.267-1.39.187-1.524-.08-.133-.293-.213-.613-.373z" fill="var(--wa-bg)"/>
-  </svg>
-  <span class="wa-fab__label">WhatsApp</span>
-</button>
-
-<!-- Overlay + Modale -->
-<div id="wa-overlay" role="dialog" aria-modal="true" aria-labelledby="wa-modal-title">
-  <div id="wa-modal">
-
-    <div class="wa-modal__header">
-      <div class="wa-modal__header-deco">◈</div>
-      <div class="wa-modal__header-text">
-        <h3 id="wa-modal-title">Scrivici su WhatsApp</h3>
-        <p>Risposta entro pochi minuti</p>
-      </div>
-      <button class="wa-modal__close" id="wa-modal-close" aria-label="Chiudi">✕</button>
-    </div>
-
-    <div class="wa-modal__body">
-      <p class="wa-modal__intro">
-        Ogni grande porta nasce da una conversazione.<br>
-        Parlaci del tuo progetto.
-      </p>
-
-      <form id="wa-form" novalidate>
-        <div class="wa-form-row">
-          <div class="wa-field">
-            <input type="text" name="name" id="wa-name" placeholder=" " required autocomplete="name" />
-            <label for="wa-name">Nome</label>
-            <div class="wa-field__line"></div>
-          </div>
-          <div class="wa-field">
-            <input type="tel" name="phone" id="wa-phone" placeholder=" " autocomplete="tel" />
-            <label for="wa-phone">Telefono</label>
-            <div class="wa-field__line"></div>
-          </div>
-        </div>
-        <div class="wa-field">
-          <textarea name="message" id="wa-message" rows="3" placeholder=" " required></textarea>
-          <label for="wa-message">Il tuo messaggio</label>
-          <div class="wa-field__line"></div>
-        </div>
-
-        <div id="wa-status"></div>
-
-        <button type="submit" id="wa-submit">
-          <span id="wa-submit-text">Invia su WhatsApp</span>
-          <span class="wa-submit__icon">◈</span>
-        </button>
-      </form>
-    </div>
-
-    <div class="wa-modal__footer">
-      <span>Luxury Doors — Porte di Lusso</span>
-    </div>
-
-  </div>
-</div>
-
-  <script src="tema.js"></script>
-  <script src="data.js"></script>
-  <script src="cursor.js"></script>
-  <script src="navbar.js"></script>
-  <script src="lightbox.js"></script>
-  <script src="animations.js"></script>
-  <script src="works.js"></script>
-  <script src="download.js"></script>
-  <script src="catalog.js"></script>
-  <script src="form.js"></script>
-  <script src="door-scroll.js"></script>
-  <script src="marquee.js"></script>
-  <script src="whatsapp.js"></script>
-  <script src="main.js"></script> 
 </body>
 </html>
